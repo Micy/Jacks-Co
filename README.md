@@ -8,3 +8,5 @@ Our Group Software Project COMP208
 	* Settle on project Idea.
 	* Produce Requirements Document
 	* Group Meeting Agenda 
+	* Sorting GitHub out
+	
