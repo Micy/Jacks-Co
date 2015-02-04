@@ -2,7 +2,7 @@
 Our Group Software Project COMP208
 
 ## Current Project Idea
-* Support Ticketing system / help des
+* Support Ticketing system / help desk
 * New Operating Syste
 * New Programming Lanuguage
 
