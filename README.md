@@ -15,4 +15,6 @@ Our Group Software Project COMP208
 * Familiarise members with workings of GitHub - [HERE](http://rogerdudler.github.io/git-guide/) and also [HERE](http://lifehacker.com/5983680/how-the-heck-do-i-use-github)
 * Learn a bit of Markdown [HERE](http://lifehacker.com/5983680/how-the-heck-do-i-use-github)
 * List of Potential project ideas [HERE](http://wiki.laptop.org/go/Software_ideas)
+* Java Database Integration tutorials and documentatation [HERE](http://docs.oracle.com/javase/tutorial/jdbc/index.html)
+
 
