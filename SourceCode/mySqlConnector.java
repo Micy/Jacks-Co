@@ -3,11 +3,11 @@ import java.sql.*;
 public class mySqlConnector {
    // JDBC driver name and database URL
    static final String JDBC_DRIVER = "com.mysql.jdbc.Driver";  
-   static final String DB_URL = "jdbc:46.101.62.246";
+   static final String DB_URL = "jdbc:mysql://46.101.62.246:3306/TicketServer";
 
    //  Database credentials
-   static final String USER = "Java";
-   static final String PASS = "Nh58NNQ7EE6CRwPM";
+   static final String USER = "test";
+   static final String PASS = "Jnc15Svr";
    
    public static void main(String[] args) {
    Connection conn = null;
@@ -24,7 +24,7 @@ public class mySqlConnector {
       System.out.println("Creating statement...");
       stmt = conn.createStatement();
       String sql;
-      sql = "SELECT Forename, Surname FROM TicketServer.Person;";
+      sql = "SELECT Forename, Surname FROM Person;";
       ResultSet rs = stmt.executeQuery(sql);
 
       //STEP 5: Extract data from result set
@@ -34,8 +34,8 @@ public class mySqlConnector {
          String last = rs.getString("Surname");
 
          //Display values
-         System.out.print(", First: " + first);
-         System.out.println(", Last: " + last);
+         System.out.println("Forename: " + first);
+         System.out.println("Surname: " + last);
       }
       //STEP 6: Clean-up environment
       rs.close();
