@@ -1,4 +1,4 @@
-
+<<<<<<< HEAD
 import java.sql.*;
 
 public class mySqlConnector {
@@ -65,4 +65,6 @@ public class mySqlConnector {
    System.out.println("Goodbye!");
 }//end main
 }//end FirstExample
+=======
 
+>>>>>>> origin/master
