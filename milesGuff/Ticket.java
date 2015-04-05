@@ -11,7 +11,7 @@ public class Ticket
 	private String referralHistory;
 	private int priority;
 	private String screenshot; //wasn't sure how to store this
-	private int timeEntered; //or this
+	private long timeEntered; //or this
 	private int timeCompleted; //or this
 
 	/////Constructor to get userID, engineerID and issueID/////
@@ -20,6 +20,10 @@ public class Ticket
 		userID = uid;
 		engineerID = eid;
 		issueID = iid;
+	}
+
+	public Ticket(){
+
 	}
 	
 	/////Methods to get variables/////
@@ -73,7 +77,7 @@ public class Ticket
 		return screenshot;
 	}
 	
-	public int getTimeEntered()
+	public long getTimeEntered()
 	{
 		return timeEntered;
 	}
@@ -84,62 +88,62 @@ public class Ticket
 	}
 	
 	/////Methods to set variables/////
-	private void setTicketID(int ticketID)
+	public void setTicketID(int ticketID)
 	{
 		this.ticketID = ticketID;
 	}
 	
-	private void setUserID(int userID)
+	public void setUserID(int userID)
 	{
 		this.userID = userID;
 	}
 	
-	private void  setEngineerID(int engineerID)
+	public void  setEngineerID(int engineerID)
 	{
 		this.engineerID = engineerID;
 	}
 	
-	private void setIssueID(int issueID)
+	public void setIssueID(int issueID)
 	{
 		this.issueID = issueID;
 	}
 	
-	private void setStateFlag(int stateFlag)
+	public void setStateFlag(int stateFlag)
 	{
 		this.stateFlag = stateFlag;
 	}
 	
-	private void getProblemDesc(String problemDescription)
+	public void getProblemDesc(String problemDescription)
 	{
 		this.problemDescription = problemDescription;
 	}
 	
-	private void setNoOfReferrals(int noOfReferrals)
+	public void setNoOfReferrals(int noOfReferrals)
 	{
 		this.noOfReferrals = noOfReferrals;
 	}
 	
-	private void getReferralHistory(String referralHistory)
+	public void getReferralHistory(String referralHistory)
 	{
 		this.referralHistory = referralHistory;
 	}
 	
-	private void setPriority(int priority)
+	public void setPriority(int priority)
 	{
 		this.priority = priority;
 	}
 	
-	private void setScreenshot(String screenshot)
+	public void setScreenshot(String screenshot)
 	{
 		this.screenshot = screenshot;
 	}
 	
-	private void setTimeEntered(int timeEntered)
+	public void setTimeEntered(long timeEntered)
 	{
 		this.timeEntered = timeEntered;
 	}
 	
-	private void setTimeCompleted(int timeCompleted)
+	public void setTimeCompleted(int timeCompleted)
 	{
 		this.timeCompleted = timeCompleted;
 	}

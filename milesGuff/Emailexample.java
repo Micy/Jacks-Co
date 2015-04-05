@@ -1,5 +1,6 @@
 
 import com.sendgrid.*;
+import java.util.*;
 
 //https://github.com/sendgrid/sendgrid-java#usage
 //java -cp .;sendgridjar.jar emailExample.java

@@ -1,4 +1,5 @@
 import java.sql.*;
+import java.util.*;
 
 //javac -classpath .;mysqlconnector.jar MySqlConnector.java
 //java -classpath .;mysqlconnector.jar MySqlConnector
@@ -30,11 +31,11 @@ public class MySqlConnector {
          Class.forName("com.mysql.jdbc.Driver");
 
          //STEP 3: Open a connection
-         System.out.println("Connecting to database...");
+         //System.out.println("Connecting to database...");
          conn = DriverManager.getConnection(DB_URL, USER, PASS);
 
          //STEP 4: Execute a query
-         System.out.println("Creating statement...");
+         // System.out.println("Creating statement...");
          stmt = conn.createStatement();
 
 
@@ -78,6 +79,11 @@ public class MySqlConnector {
    }
 
 
+
+
+
+   //method to return the email address of the passed sql as a string, which
+   //can then be used to send an email
    public String returnEmail() {
 
       Connection conn = null;
@@ -85,30 +91,21 @@ public class MySqlConnector {
       try {
          //STEP 2: Register JDBC driver
          Class.forName("com.mysql.jdbc.Driver");
-
          //STEP 3: Open a connection
-         System.out.println("Connecting to database...");
+         //System.out.println("Connecting to database...");
          conn = DriverManager.getConnection(DB_URL, USER, PASS);
-
          //STEP 4: Execute a query
-         System.out.println("Creating statement...");
+         //System.out.println("Creating statement...");
          stmt = conn.createStatement();
-
-
          ResultSet rs = stmt.executeQuery(sql);
-
          while (rs.next()) {
             email = rs.getString("Email");
             System.out.println("Email: " + email);
-            
          }
-         
-
          //STEP 6: Clean-up environment
          rs.close();
          stmt.close();
          conn.close();
-
       } catch (SQLException se) {
          //Handle errors for JDBC
          se.printStackTrace();
@@ -132,4 +129,129 @@ public class MySqlConnector {
       }//end try
       return email;
    }
+
+
+
+
+
+
+   public List<Ticket> returnTicketList() {
+      List<Ticket> open_tickets = new ArrayList<Ticket>();
+      int ticketID;
+      int issueID;
+      int priority;
+      Timestamp timeEntered;
+      long timeEnteredLong;
+
+      Connection conn = null;
+      Statement stmt = null;
+      try {
+         //STEP 2: Register JDBC driver
+         Class.forName("com.mysql.jdbc.Driver");
+         //STEP 3: Open a connection
+         //System.out.println("Connecting to database...");
+         conn = DriverManager.getConnection(DB_URL, USER, PASS);
+         //STEP 4: Execute a query
+         //System.out.println("Creating statement...");
+         stmt = conn.createStatement();
+         ResultSet rs = stmt.executeQuery(sql);
+         while (rs.next()) {
+
+
+            //set variables to the values in the specified comments
+            ticketID = rs.getInt("TicketID");
+            issueID = rs.getInt("IssueID");
+            priority = rs.getInt("Priority");
+            timeEntered = rs.getTimestamp("TimeEntered");
+            //convert timestamp to long
+            timeEnteredLong = timeEntered.getTime();
+            //create a new ticket, then add variables
+            Ticket new_ticket = new Ticket();
+            new_ticket.setTicketID(ticketID);
+            new_ticket.setIssueID(issueID);
+            new_ticket.setPriority(priority);
+            new_ticket.setTimeEntered(timeEnteredLong);
+
+
+            open_tickets.add(new_ticket);
+         }
+
+
+         //STEP 6: Clean-up environment
+         rs.close();
+         stmt.close();
+         conn.close();
+      } catch (SQLException se) {
+         //Handle errors for JDBC
+         se.printStackTrace();
+      } catch (Exception e) {
+         //Handle errors for Class.forName
+         e.printStackTrace();
+      } finally {
+         //finally block used to close resources
+         try {
+            if (stmt != null)
+               stmt.close();
+         } catch (SQLException se2) {
+         }// nothing we can do
+         try {
+            if (conn != null)
+               conn.close();
+         } catch (SQLException se) {
+            se.printStackTrace();
+         }//end finally try
+         //return "I'm not sure";
+      }//end try
+      return open_tickets;
+   }
+
+
+
+   public void acceptTicket(){
+      Connection conn = null;
+      Statement stmt = null;
+      try {
+         //STEP 2: Register JDBC driver
+         Class.forName("com.mysql.jdbc.Driver");
+         //STEP 3: Open a connection
+         //System.out.println("Connecting to database...");
+         conn = DriverManager.getConnection(DB_URL, USER, PASS);
+         //STEP 4: Execute a query
+         //System.out.println("Creating statement...");
+         stmt = conn.createStatement();
+         stmt.executeUpdate(sql);
+         
+         //STEP 6: Clean-up environment
+
+         stmt.close();
+         conn.close();
+      } catch (SQLException se) {
+         //Handle errors for JDBC
+         se.printStackTrace();
+      } catch (Exception e) {
+         //Handle errors for Class.forName
+         e.printStackTrace();
+      } finally {
+         //finally block used to close resources
+         try {
+            if (stmt != null)
+               stmt.close();
+         } catch (SQLException se2) {
+         }// nothing we can do
+         try {
+            if (conn != null)
+               conn.close();
+         } catch (SQLException se) {
+            se.printStackTrace();
+         }//end finally try
+         //return "I'm not sure";
+      }//end try
+
+   }
+
+
+
+
 }
+
+
