@@ -207,7 +207,142 @@ public class MySqlConnector {
 
 
 
-   public void acceptTicket(){
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   public Vector<Vector> returnTicketListVector() {
+
+      Vector<Vector> vector_of_tickets = new Vector<Vector>();
+      Timestamp timeEntered;
+      Long timeEnteredLong;
+
+
+      Connection conn = null;
+      Statement stmt = null;
+      try {
+         //STEP 2: Register JDBC driver
+         Class.forName("com.mysql.jdbc.Driver");
+         //STEP 3: Open a connection
+         //System.out.println("Connecting to database...");
+         conn = DriverManager.getConnection(DB_URL, USER, PASS);
+         //STEP 4: Execute a query
+         //System.out.println("Creating statement...");
+         stmt = conn.createStatement();
+         ResultSet rs = stmt.executeQuery(sql);
+
+         //http://stackoverflow.com/questions/10620448/most-simple-code-to-populate-jtable-from-resultset
+         //http://www.java2s.com/Code/Java/Swing-JFC/DisplayResultSetinTableJTable.htm
+         //Get metadata from result set
+         ResultSetMetaData metaData = rs.getMetaData();
+         //get number of columns
+         int columnCount = metaData.getColumnCount();
+         //create array for table header
+         String[] columnNames = new String[columnCount];
+         //populate array with column name
+         for (int h = 1; h <= columnCount; h++) {
+            columnNames[h - 1] = metaData.getColumnName(h);
+         }
+
+         //for every record in resultset
+         while (rs.next()) {
+            //create a new string array with lenght of the number of columns
+            Vector<String> individual_ticket = new Vector<String>();
+            //move throught the ticket and parse everything as a string, then store it in the
+            //array
+
+            individual_ticket.addElement(rs.getString("TicketID"));
+            individual_ticket.addElement(rs.getString("IssueID"));
+            individual_ticket.addElement(rs.getString("Priority"));
+            //get timestamp as timestamp
+            timeEntered = rs.getTimestamp("TimeEntered");
+            //convert timestamp to long
+            timeEnteredLong = timeEntered.getTime();
+
+            //set the long to string, then add it
+            individual_ticket.addElement(timeSinceMethod(timeEnteredLong));
+            //adds that array of strings to the vector
+            vector_of_tickets.addElement(individual_ticket);
+
+         }
+
+         //STEP 6: Clean-up environment
+         rs.close();
+         stmt.close();
+         conn.close();
+      } catch (SQLException se) {
+         //Handle errors for JDBC
+         se.printStackTrace();
+      } catch (Exception e) {
+         //Handle errors for Class.forName
+         e.printStackTrace();
+      } finally {
+         //finally block used to close resources
+         try {
+            if (stmt != null)
+               stmt.close();
+         } catch (SQLException se2) {
+         }// nothing we can do
+         try {
+            if (conn != null)
+               conn.close();
+         } catch (SQLException se) {
+            se.printStackTrace();
+         }//end finally try
+         //return "I'm not sure";
+      }//end try
+      return vector_of_tickets;
+   }
+
+
+
+
+
+
+   public static String timeSinceMethod(long tmEntrd) {
+
+      long currentTime = System.currentTimeMillis();
+      long diffInSeconds = (currentTime - tmEntrd) / 1000;
+
+      long diff[] = new long[] { 0, 0, 0, 0 };
+      /* sec */diff[3] = (diffInSeconds >= 60 ? diffInSeconds % 60 : diffInSeconds);
+      /* min */diff[2] = (diffInSeconds = (diffInSeconds / 60)) >= 60 ? diffInSeconds % 60 : diffInSeconds;
+      /* hours */diff[1] = (diffInSeconds = (diffInSeconds / 60)) >= 24 ? diffInSeconds % 24 : diffInSeconds;
+      /* days */diff[0] = (diffInSeconds = (diffInSeconds / 24));
+
+      if (diff[0] >= 1) {
+         return String.format(
+                   "%d D%s, %d hr%s, %d min%s, %d sec%s",
+                   diff[0],
+                   diff[0] > 1 ? "s" : "",
+                   diff[1],
+                   diff[1] > 1 ? "s" : "",
+                   diff[2],
+                   diff[2] > 1 ? "s" : "",
+                   diff[3],
+                   diff[3] > 1 ? "s" : "");
+      }
+   }
+
+
+
+
+
+
+
+
+
+   public void acceptTicket() {
       Connection conn = null;
       Statement stmt = null;
       try {
@@ -220,7 +355,7 @@ public class MySqlConnector {
          //System.out.println("Creating statement...");
          stmt = conn.createStatement();
          stmt.executeUpdate(sql);
-         
+
          //STEP 6: Clean-up environment
 
          stmt.close();
