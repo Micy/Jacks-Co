@@ -39,7 +39,7 @@ public class mySqlConnector {
       sql = "SELECT PersonID, Password, Forename, Surname FROM Person WHERE PersonID = "+userID+" AND Password = "+pass;
       ResultSet rs = stmt.executeQuery(sql);
       if(!rs.first()){
-         System.out.println("user not found");
+         //System.out.println("user not found");
          return null;
       }
       else{
@@ -174,13 +174,13 @@ public class mySqlConnector {
    public static List<Engineer> getManagersEngineers(int mID){
       Connection conn = null;
       Statement stmt = null;
-      List<Engineer> list = new ArrayList<Engineer>();
+      List<Engineer> list = new Vector<Engineer>();
       try{
          Class.forName("com.mysql.jdbc.Driver");
          conn = DriverManager.getConnection(DB_URL,USER,PASS);
          stmt = conn.createStatement();
          String sql;
-         sql = "SELECT EngineerID, ExpertiseID, Availability, ManagerID, Person.PersonID, Title, Forename, Surname, Email, PhoneNumber, Password, Salt FROM Person, Engineer WHERE Engineer.PersonID = Person.PersonID AND Engineer.ManagerID = "+mID;
+         sql = "SELECT * FROM Person, Engineer WHERE Engineer.PersonID = Person.PersonID AND Engineer.ManagerID = "+mID;
          ResultSet rs = stmt.executeQuery(sql);
          while(rs.next()){
          list.add(new Engineer(rs.getInt("EngineerID"),rs.getInt("ExpertiseID"),rs.getInt("Availability"),rs.getInt("ManagerID"),rs.getInt("PersonID"),rs.getString("Title"),rs.getString("Forename"),rs.getString("Surname"),rs.getString("Email"),rs.getString("PhoneNumber"),rs.getString("Password"),rs.getString("Salt")));
@@ -230,7 +230,7 @@ public class mySqlConnector {
    public static List<User> getAllUsers(){
       Connection conn = null;
       Statement stmt = null;
-      List<User> list = new ArrayList<User>();
+      List<User> list = new Vector<User>();
       try{
          Class.forName("com.mysql.jdbc.Driver");
          conn = DriverManager.getConnection(DB_URL,USER,PASS);
@@ -267,9 +267,13 @@ public class mySqlConnector {
       }//end finally try
    }//end try
       return null;
-
-
    }
+
+
+
+
+
+
 
 
    //main method for testing only TO BE REMOVED..
