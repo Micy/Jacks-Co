@@ -13,6 +13,19 @@ public class mySqlConnector {
    static final String USER = "test";
    static final String PASS = "Jnc15Svr";
 
+
+
+
+
+
+
+
+
+
+
+
+
+
    // the user logs in using thier personID
    public static session login(int userID, String pass){
    Connection conn = null;
@@ -71,6 +84,18 @@ public class mySqlConnector {
       return null;
    }//login method
    
+
+
+
+
+
+
+
+
+
+
+
+
 
    //returns the following values dependant on user type
    // 0 = engineer 1 = manager 2 = user or person entered is neither a engineer or manager
@@ -132,6 +157,19 @@ public class mySqlConnector {
    return 2;
    }
 
+
+
+
+
+
+
+
+
+
+
+
+
+
    //returns a list of engineers given a manager ID
    public static List<Engineer> getManagersEngineers(int mID){
       Connection conn = null;
@@ -147,6 +185,11 @@ public class mySqlConnector {
          while(rs.next()){
          list.add(new Engineer(rs.getInt("EngineerID"),rs.getInt("ExpertiseID"),rs.getInt("Availability"),rs.getInt("ManagerID"),rs.getInt("PersonID"),rs.getString("Title"),rs.getString("Forename"),rs.getString("Surname"),rs.getString("Email"),rs.getString("PhoneNumber"),rs.getString("Password"),rs.getString("Salt")));
          }
+
+
+         rs.close();
+         stmt.close();
+         conn.close(); 
          return list;
       }//try
       catch(SQLException se){
@@ -172,6 +215,63 @@ public class mySqlConnector {
       return null;
    }
 
+
+
+
+
+
+
+
+
+
+
+
+   //returns a list of all users within the system.
+   public static List<User> getAllUsers(){
+      Connection conn = null;
+      Statement stmt = null;
+      List<User> list = new ArrayList<User>();
+      try{
+         Class.forName("com.mysql.jdbc.Driver");
+         conn = DriverManager.getConnection(DB_URL,USER,PASS);
+         stmt = conn.createStatement();
+         String sql; 
+         sql = "SELECT * FROM User, Person WHERE User.PersonID=Person.PersonID";  
+         ResultSet rs = stmt.executeQuery(sql);
+         while(rs.next()){
+            list.add(new User(rs.getInt("UserID"),rs.getInt("PersonID"),rs.getString("Title"),rs.getString("Forename"),rs.getString("Surname"),rs.getString("Email"),rs.getString("PhoneNumber"),rs.getString("Password"),rs.getString("Salt")));
+         }
+         rs.close();
+         stmt.close();
+         conn.close(); 
+         return list;
+      }//try
+      catch(SQLException se){
+      //Handle errors for JDBC
+      se.printStackTrace();
+   }catch(Exception e){
+      //Handle errors for Class.forName
+      e.printStackTrace();
+   }finally{
+      //finally block used to close resources
+      try{
+         if(stmt!=null)
+            stmt.close();
+      }catch(SQLException se2){
+      }// nothing we can do
+      try{
+         if(conn!=null)
+            conn.close();
+      }catch(SQLException se){
+         se.printStackTrace();
+      }//end finally try
+   }//end try
+      return null;
+
+
+   }
+
+
    //main method for testing only TO BE REMOVED..
    public static void main(String[] args) {
       session nsess = login(1,"1234");
@@ -180,6 +280,14 @@ public class mySqlConnector {
 
       for (int i=0; i<engineers.size(); i++){
             System.out.println(engineers.get(i).getEngineerID()+engineers.get(i).getForename());
+      }
+
+      List<User> users = getAllUsers();
+
+      System.out.println("USERS:  ");
+         
+      for (int i=0; i<users.size(); i++){
+            System.out.println(users.get(i).getUserID()+users.get(i).getForename());
       }
 
 
@@ -191,4 +299,4 @@ public class mySqlConnector {
 
 
 
-}//end FirstExample
+}//end Class
