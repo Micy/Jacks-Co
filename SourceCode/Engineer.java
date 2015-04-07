@@ -7,9 +7,15 @@ public class Engineer extends Person
 	private int availability;
 	
 	/////Constructor to get managerID/////
-	public Engineer(int mid)
-	{
+
+	public Engineer(int eID, int expID, int aval,  int mid, int pid, String title, String forename, String surname, String email, String phoneN, String password, String salt)
+	{	
+		super(pid, title, forename, surname, email, phoneN, password, salt);
+		engineerID=eID;
+		expertiseID=expID;
+		availability = aval;
 		managerID = mid;
+		
 	}
 	
 	/////Methods to get variables/////

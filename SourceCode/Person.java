@@ -1,14 +1,27 @@
 import java.util.*;
 public class Person
 {
-	public int personID;
-	public String title;
-	public String forename;
-	public String surname;
-	public String email;
-	public String phoneNumber;
-	protected String password;
-	protected String salt;
+	private int personID;
+	private String title;
+	private String forename;
+	private String surname;
+	private String email;
+	private String phoneNumber;
+	private String password;
+	private String salt;
+
+	Person(int pid, String title, String forename, String surname, String email, String phoneN, String password, String salt){
+
+	this.personID=pid;
+	this.title=title;
+	this.forename=forename;
+	this.surname=surname;
+	this.email=email;
+	this.phoneNumber=phoneN;
+	this.password=password;
+	this.salt=salt;
+
+	}
 	
 	/////Methods to get variables/////
 	public int getPersonID()
@@ -16,37 +29,37 @@ public class Person
 		return personID;
 	}
 	
-	public Object getTitle()
+	public String getTitle()
 	{
 		return title;
 	}
 	
-	public Object getForename()
+	public String getForename()
 	{
 		return forename ;
 	}
 	
-	public Object getSurname()
+	public String getSurname()
 	{
 		return surname;
 	}
 	
-	public Object getEmail()
+	public String getEmail()
 	{
 		return email;
 	}
 	
-	public Object getPhoneNumber()
+	public String getPhoneNumber()
 	{
 		return phoneNumber;
 	}
 	
-	public Object getPassword()
+	public String getPassword()
 	{
 		return password;
 	}
 	
-	public Object getSalt()
+	public String getSalt()
 	{
 		return salt;
 	}
