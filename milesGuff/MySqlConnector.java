@@ -262,7 +262,7 @@ public class MySqlConnector {
             //array
 
             individual_ticket.addElement(rs.getString("TicketID"));
-            individual_ticket.addElement(rs.getString("IssueID"));
+            individual_ticket.addElement(rs.getString("IssueName"));
             individual_ticket.addElement(rs.getString("Priority"));
             //get timestamp as timestamp
             timeEntered = rs.getTimestamp("TimeEntered");
@@ -322,15 +322,30 @@ public class MySqlConnector {
 
       if (diff[0] >= 1) {
          return String.format(
-                   "%d D%s, %d hr%s, %d min%s, %d sec%s",
+                   "%d day%s",
                    diff[0],
-                   diff[0] > 1 ? "s" : "",
+                   diff[0] > 1 ? "s" : ""
+                );
+      }
+      if (diff[1] >= 1) {
+         return String.format(
+                   "%d hour%s",
                    diff[1],
-                   diff[1] > 1 ? "s" : "",
+                   diff[1] > 1 ? "s" : ""
+                );
+      }
+      if (diff[2] >= 1) {
+         return String.format(
+                   "%d minute%s",
                    diff[2],
-                   diff[2] > 1 ? "s" : "",
+                   diff[2] > 1 ? "s" : ""
+                );
+      } else  {
+         return String.format(
+                   "%d second%s",
                    diff[3],
-                   diff[3] > 1 ? "s" : "");
+                   diff[3] > 1 ? "s" : ""
+                );
       }
    }
 

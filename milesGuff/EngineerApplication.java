@@ -12,6 +12,9 @@ import javax.swing.event.*;
 import java.awt.Dimension;
 import java.awt.GridLayout;
 import java.awt.Component;
+import java.awt.Font;
+import java.awt.Color;
+import java.awt.event.*;
 
 //MigLayout
 import net.miginfocom.layout.Grid;
@@ -23,6 +26,14 @@ import net.miginfocom.swing.MigLayout;
 
 
 
+//
+///
+//  TO DO
+
+//  RETURN A TICKET FROM MYSQL CONNECTOR USING THE BASTARD QUERY
+///	PARSE THAT TICKET INTO ALL THE TEXT FIELDS
+////
+
 
 
 public class EngineerApplication extends JFrame {
@@ -33,7 +44,11 @@ public class EngineerApplication extends JFrame {
 	static String sqlSelectOpenTickets = "SELECT TicketID, IssueID, Priority, TimeEntered FROM Ticket WHERE StateFlag =2;";
 	static String sqlSelectQueueTickets = "SELECT TicketID, IssueID, Priority, TimeEntered FROM Ticket WHERE StateFlag =1;";
 	static String sqlAllTickets = "SELECT TicketID, IssueID, Priority, TimeEntered FROM Ticket;";
+	static String sqlSelectFromTicketID = "SELECT Ticket.TicketID,  FROM ";
+	static String sqlAllTicketsJoinIssueType = "SELECT Ticket.TicketID, IssueType.IssueName, Ticket.Priority, Ticket.TimeEntered FROM Ticket INNER JOIN IssueType ON Ticket.IssueID=IssueType.IssueID;";
+	static String sqlCreateUserInfo = "SELECT Ticket.TicketID, Ticket.NoOfReferrals, Ticket.Priority, Ticket.Screenshot, Ticket.ProblemDescription, Ticket.TimeEntered, Person.Title, Person.Forename, Person.Surname, IssueType.IssueName, Person.Email, Person.PhoneNumber FROM `User` INNER JOIN Ticket ON Ticket.UserID = `User`.UserID INNER JOIN Person ON `User`.PersonID = Person.PersonID INNER JOIN IssueType ON Ticket.IssueID = IssueType.IssueID;";
 	static Vector<String> ticketTableHeaders = new Vector<String>();
+	static int selectedTicketID = 0;
 
 
 	public static void main(String[] args) {
@@ -53,10 +68,11 @@ public class EngineerApplication extends JFrame {
 		buildGUI();
 
 		setDefaultCloseOperation(EXIT_ON_CLOSE);
+		setSize(800, 570);
 		//pack();
 		setVisible(true);
-		setPreferredSize(new Dimension(1000, 1000));
-		setMinimumSize(new Dimension(1000, 1000));
+
+
 	}
 
 
@@ -64,14 +80,39 @@ public class EngineerApplication extends JFrame {
 	private JButton openTicketsButton;
 	private JButton queueTicketsButton;
 	private JButton refreshButton;
+	private JButton completeButton;
+	private JButton referButton;
 
+	//Text areas
+	private JTextArea ticketDetailsTitle;
+	private JTextArea timeSubmittedTitle;
+	private JTextArea timeSubmittedContent;
+	private JTextArea referralsTitle;
+	private JTextArea referralsContent;
+	private JTextArea priorityTitle;
+	private JTextArea priorityContent;
+	private JTextArea ticketIDTitle;
+	private JTextArea ticketIDContent;
+	private JTextArea userIDTitle;
+	private JTextArea userIDContent;
+	private JTextArea issueTypeTitle;
+	private JTextArea issueTypeContent;
+	private JTextArea detailsTitle;
+	private JTextArea detailsContent;
 
+	//Fonts
+	Font headerFont = new Font("SansSerif", Font.PLAIN, 25);
+	Font titleFont = new Font("SansSerif", Font.PLAIN, 15);
+
+	//Colours
+	Color defaultGrey = new Color(238, 238, 238);
 
 
 	private void buildGUI() {
 		setLayout(new MigLayout());
 
 		add(new LeftSide());
+		add(new RightSide());
 
 
 	}
@@ -79,10 +120,11 @@ public class EngineerApplication extends JFrame {
 	public class LeftSide extends JPanel {
 		public LeftSide() {
 			setLayout(new MigLayout("wrap 1"));
-			add(new ViewsButtonPanel());
-			add(new TablePanel("Table", sqlAllTickets));
+			add(new ViewsButtonPanel(), "align center");
+			add(new TablePanel("Table", sqlAllTicketsJoinIssueType));
 		}
 	}
+
 
 	public class TablePanel extends JPanel {
 
@@ -90,43 +132,46 @@ public class EngineerApplication extends JFrame {
 
 			MySqlConnector ticketsTable = new MySqlConnector(sqlQuery);
 			ticketTableHeaders.addElement("TicketID");
-			ticketTableHeaders.addElement("IssueID");
+			ticketTableHeaders.addElement("Issue Type");
 			ticketTableHeaders.addElement("Priority");
-			ticketTableHeaders.addElement("TimeEntered");
+			ticketTableHeaders.addElement("Time In System");
 			//the data needs to be a vector<vector>
-			JTable leftTable = new JTable(ticketsTable.returnTicketListVector(), ticketTableHeaders);
-			//leftTable.setPreferredSize(new Dimension(590, 400));
-			leftTable.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
+			final JTable leftTable = new JTable(ticketsTable.returnTicketListVector(), ticketTableHeaders);
+
 			add(new JScrollPane(leftTable));
 
 			leftTable.getColumnModel().getColumn(0).setPreferredWidth(53);
-			leftTable.getColumnModel().getColumn(1).setPreferredWidth(53);
+			leftTable.getColumnModel().getColumn(1).setPreferredWidth(130);
 			leftTable.getColumnModel().getColumn(2).setPreferredWidth(50);
 			leftTable.getColumnModel().getColumn(3).setPreferredWidth(130);
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 			setBorder(new TitledBorder(new EtchedBorder(),	tableTitle));
-			setPreferredSize(new Dimension(600, 500));
+			setPreferredSize(new Dimension(470, 500));
+
+
+
+			MouseListener tableMouseListener = new MouseAdapter() {
+
+				@Override
+				public void mouseClicked(MouseEvent e) {
+
+					int row = leftTable.rowAtPoint(e.getPoint());//get mouse-selected row
+					int col = leftTable.columnAtPoint(e.getPoint());//get mouse-selected col
+					int[] newEntry = new int[] {row, col}; //{row,col}=selected cell
+					System.out.println(leftTable.getValueAt(row,0));
+					//System.out.println(row);
+					
+
+				}
+			};
+
+			leftTable.addMouseListener(tableMouseListener);
+			leftTable.getTableHeader().setReorderingAllowed(false);
+
+
+
+
+
 
 		}
 
@@ -145,7 +190,74 @@ public class EngineerApplication extends JFrame {
 		}
 	}
 
+	public class RightSide extends JPanel {
+		public RightSide() {
+			setLayout(new MigLayout("wrap 1"));
 
+
+			ticketDetailsTitle = new JTextArea("Ticket Details");
+			ticketDetailsTitle.setFont(headerFont);
+			ticketDetailsTitle.setEditable(false);
+			ticketDetailsTitle.setBackground(defaultGrey);
+			add(ticketDetailsTitle);
+
+			add(new TicketDetailsPanel());
+			setPreferredSize(new Dimension(263, 500));
+
+		}
+	}
+
+	public class TicketDetailsPanel extends JPanel {
+		public TicketDetailsPanel() {
+			setLayout(new MigLayout("wrap 2", "[]20[]", "[]2[]" ));
+
+
+			// ticketDetailsTitle = new JTextArea("Ticket Details");
+			// ticketDetailsTitle.setFont(headerFont);
+
+			timeSubmittedTitle = new JTextArea("Time Submitted:");
+			timeSubmittedTitle.setBackground(defaultGrey);
+			timeSubmittedContent = new JTextArea("blurgh");
+			referralsTitle = new JTextArea("Referrals:");
+			referralsTitle.setBackground(defaultGrey);
+			referralsContent = new JTextArea("blargh");
+			priorityTitle = new JTextArea("Ticket Priority: ");
+			priorityTitle.setBackground(defaultGrey);
+			priorityContent = new JTextArea("blloght");
+			timeSubmittedTitle.setFont(titleFont);
+			timeSubmittedContent.setFont(titleFont);
+			referralsTitle.setFont(titleFont);
+			referralsContent.setFont(titleFont);
+			priorityTitle.setFont(titleFont);
+			priorityContent.setFont(titleFont);
+
+			// ticketDetailsTitle.setEditable(false);
+			//ticketDetailsTitle.setEditable(false);
+			timeSubmittedTitle.setEditable(false);
+			timeSubmittedContent.setEditable(false);
+			referralsTitle.setEditable(false);
+			referralsContent.setEditable(false);
+			priorityTitle.setEditable(false);
+			priorityContent.setEditable(false);
+
+
+
+
+			// add(ticketDetailsTitle, "span 2");
+			add(timeSubmittedTitle);
+			add(timeSubmittedContent);
+			add(referralsTitle);
+			add(referralsContent);
+			add(priorityTitle);
+			add(priorityContent);
+
+
+			setBorder(new EtchedBorder());
+			setPreferredSize(new Dimension(263, 100));
+
+		}
+
+	}
 
 
 
