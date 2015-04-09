@@ -12,17 +12,23 @@ public class Ticket
 	private int priority;
 	private String screenshot; //wasn't sure how to store this
 	private long timeEntered; //or this
-	private int timeCompleted; //or this
-
-	/////Constructor to get userID, engineerID and issueID/////
-	public Ticket(int uid, int eid, int iid)
-	{
-		userID = uid;
-		engineerID = eid;
-		issueID = iid;
-	}
-
-	public Ticket(){
+	private long timeCompleted; //or this
+	
+	public Ticket(int tID, int uID, int eID, int iID, long timeE, int sFlag, String pDesc, String screenShot, long timeC, int noOfRef, String refHist, int priority){
+	
+		this.ticketID=tID;
+		this.userID=uID;
+		this.engineerID=eID;
+		this.issueID=iID;
+		this.stateFlag=sFlag;
+		this.problemDescription=pDesc;
+		this.noOfReferrals=noOfRef;
+		this.referralHistory=refHist;
+		this.priority=priority;
+		this.screenshot=screenShot; 
+		this.timeEntered=timeE;
+		this.timeCompleted=timeC;
+	
 
 	}
 	
@@ -82,10 +88,17 @@ public class Ticket
 		return timeEntered;
 	}
 	
-	public int getTimeCompleted()
+	public long getTimeCompleted()
 	{
 		return timeCompleted;
 	}
+	
+	public String getIssueName()
+	{
+		return mySqlConnector.getIssueName(issueID);
+	}
+	
+	
 	
 	/////Methods to set variables/////
 	public void setTicketID(int ticketID)

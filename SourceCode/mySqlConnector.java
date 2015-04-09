@@ -270,11 +270,111 @@ public class mySqlConnector {
    }
 
 
+   
+	//get all open tickets for a given engineerID
+	
+	public static List<Ticket> getOpenTickets(int eID){
+		Connection conn = null;
+		Statement stmt = null;
+		List<Ticket> list = new Vector<Ticket>();
+		try{
+			Class.forName("com.mysql.jdbc.Driver");
+			conn = DriverManager.getConnection(DB_URL,USER,PASS);
+			stmt = conn.createStatement();
+			String sql; 
+			sql = "SELECT * FROM Ticket WHERE StateFlag = 2 AND EngineerID = "+eID;
+			ResultSet rs = stmt.executeQuery(sql);
+			while(rs.next()){
+				list.add(new Ticket(rs.getInt("TicketID"),rs.getInt("UserID"),rs.getInt("EngineerID"),rs.getInt("IssueID"),(rs.getTimestamp("TimeEntered").getTime()),rs.getInt("StateFlag"),rs.getString("ProblemDescription"),rs.getString("Screenshot"),(rs.getTimestamp("TimeEntered").getTime()),rs.getInt("NoOfReferrals"),rs.getString("RefferalHistory"),rs.getInt("Priority")));
+			}
+		rs.close();
+        stmt.close();
+        conn.close(); 
+         return list;	
+		}//try
+		catch(SQLException se){
+		  //Handle errors for JDBC
+		  se.printStackTrace();
+	   }catch(Exception e){
+		  //Handle errors for Class.forName
+		  e.printStackTrace();
+	   }finally{
+		  //finally block used to close resources
+		  try{
+			 if(stmt!=null)
+				stmt.close();
+		  }catch(SQLException se2){
+		  }// nothing we can do
+		  try{
+			 if(conn!=null)
+				conn.close();
+		  }catch(SQLException se){
+			 se.printStackTrace();
+		  }//end finally try
+	   }//end try
+		  return null;
+   }
 
 
 
 
 
+
+
+
+   
+	
+	public static String getIssueName(int iID){
+		Connection conn = null;
+		Statement stmt = null;
+		String name;
+		try{
+			Class.forName("com.mysql.jdbc.Driver");
+			conn = DriverManager.getConnection(DB_URL,USER,PASS);
+			stmt = conn.createStatement();
+			String sql; 
+			sql="SELECT * FROM IssueType WHERE IssueID = "+iID;
+			ResultSet rs = stmt.executeQuery(sql);
+			rs.first();
+			name=rs.getString("IssueName");
+			rs.close();
+			stmt.close();
+			conn.close(); 
+			return name;
+		}//try
+		catch(SQLException se){
+		  //Handle errors for JDBC
+		  se.printStackTrace();
+	   }catch(Exception e){
+		  //Handle errors for Class.forName
+		  e.printStackTrace();
+	   }finally{
+		  //finally block used to close resources
+		  try{
+			 if(stmt!=null)
+				stmt.close();
+		  }catch(SQLException se2){
+		  }// nothing we can do
+		  try{
+			 if(conn!=null)
+				conn.close();
+		  }catch(SQLException se){
+			 se.printStackTrace();
+		  }//end finally try
+	   }//end try
+		return "ERROR!";
+	
+	
+	
+	}
+	
+	
+	
+	
+	
+
+	
+	
 
    //main method for testing only TO BE REMOVED..
    public static void main(String[] args) {
@@ -293,6 +393,15 @@ public class mySqlConnector {
       for (int i=0; i<users.size(); i++){
             System.out.println(users.get(i).getUserID()+users.get(i).getForename());
       }
+	  
+	  List<Ticket> tickets = getOpenTickets(1);
+	  
+	  
+	  System.out.println("Tickets for Engineer 1:  ");
+	   for (int i=0; i<tickets.size(); i++){
+            System.out.println(tickets.get(i).getTicketID()+"    "+tickets.get(i).getProblemDesc());
+      }
+	  
 
 
    }//end main
