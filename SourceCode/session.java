@@ -28,5 +28,13 @@ public class session{
 	public String getSurname(){
 		return surname;
 	}
+	public int getEngineerID(){
+		if(userType!=0){
+		return -1;
+		}
+		else{
+		 return mySqlConnector.getEngineerID(userID);
+		}
+	}
 
 }

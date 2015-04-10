@@ -49,13 +49,15 @@ public class EngineerApplication extends JFrame {
 	static String sqlCreateUserInfo = "SELECT Ticket.TicketID, Ticket.NoOfReferrals, Ticket.Priority, Ticket.Screenshot, Ticket.ProblemDescription, Ticket.TimeEntered, Person.Title, Person.Forename, Person.Surname, IssueType.IssueName, Person.Email, Person.PhoneNumber FROM `User` INNER JOIN Ticket ON Ticket.UserID = `User`.UserID INNER JOIN Person ON `User`.PersonID = Person.PersonID INNER JOIN IssueType ON Ticket.IssueID = IssueType.IssueID;";
 	static Vector<String> ticketTableHeaders = new Vector<String>();
 	static int selectedTicketID = 0;
+	
+	static session engineerID;
 
 
 	public static void main(String[] args) {
 
 
-
-		EngineerApplication frame = new EngineerApplication();
+		session nsess = mySqlConnector.login(2,"1234");
+		EngineerApplication frame = new EngineerApplication(nsess);
 
 
 
@@ -63,8 +65,9 @@ public class EngineerApplication extends JFrame {
 
 	}
 
-	EngineerApplication() {
+	EngineerApplication(session eID) {
 		super("Engineer Application");
+		engineerID=eID;
 		buildGUI();
 
 		setDefaultCloseOperation(EXIT_ON_CLOSE);
@@ -121,7 +124,7 @@ public class EngineerApplication extends JFrame {
 		public LeftSide() {
 			setLayout(new MigLayout("wrap 1"));
 			add(new ViewsButtonPanel(), "align center");
-			add(new TicketTable("Table", mySqlConnector.getOpenTickets(1)));//Where tickets are loaded from
+			add(new TicketTable("Table", mySqlConnector.getOpenTickets(engineerID.getEngineerID())));//Where tickets are loaded from
 		}
 	}
 
@@ -130,10 +133,6 @@ public class EngineerApplication extends JFrame {
 
 		public TicketTable(String tableTitle, List<Ticket> tickets) {
 
-
-		
-		
-			//MySqlConnector ticketsTable = new MySqlConnector(sqlQuery);
 			int tSize = tickets.size();
 			String[][] ticketTable = new String[tSize][4];
 			
@@ -147,7 +146,6 @@ public class EngineerApplication extends JFrame {
 				}
 			
 			String[] columnNames ={"TicketID","Issue Type","Priority","Time In System"};
-			//the data needs to be a vector<vector>
 			final JTable leftTable = new JTable(ticketTable, columnNames);
 
 			add(new JScrollPane(leftTable));

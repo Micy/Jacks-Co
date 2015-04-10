@@ -26,7 +26,7 @@ public class mySqlConnector {
 
 
 
-   // the user logs in using thier personID
+   // the user logs in using their personID
    public static session login(int userID, String pass){
    Connection conn = null;
    Statement stmt = null;
@@ -314,9 +314,90 @@ public class mySqlConnector {
 	   }//end try
 		  return null;
    }
+   
+   	public static List<Ticket> getAllManagersTickets(int mID){
+		Connection conn = null;
+		Statement stmt = null;
+		List<Ticket> list = new Vector<Ticket>();
+		try{
+			Class.forName("com.mysql.jdbc.Driver");
+			conn = DriverManager.getConnection(DB_URL,USER,PASS);
+			stmt = conn.createStatement();
+			String sql; 
+			sql = "SELECT * FROM Ticket WHERE (StateFlag = 2 OR StateFlag = 2) AND Engineer.ManagerID = Manager.ManagerID  AND Manager.ManagerID = "+mID;
+			ResultSet rs = stmt.executeQuery(sql);
+			while(rs.next()){
+				list.add(new Ticket(rs.getInt("TicketID"),rs.getInt("UserID"),rs.getInt("EngineerID"),rs.getInt("IssueID"),(rs.getTimestamp("TimeEntered").getTime()),rs.getInt("StateFlag"),rs.getString("ProblemDescription"),rs.getString("Screenshot"),(rs.getTimestamp("TimeEntered").getTime()),rs.getInt("NoOfReferrals"),rs.getString("RefferalHistory"),rs.getInt("Priority")));
+			}
+		rs.close();
+        stmt.close();
+        conn.close(); 
+         return list;	
+		}//try
+		catch(SQLException se){
+		  //Handle errors for JDBC
+		  se.printStackTrace();
+	   }catch(Exception e){
+		  //Handle errors for Class.forName
+		  e.printStackTrace();
+	   }finally{
+		  //finally block used to close resources
+		  try{
+			 if(stmt!=null)
+				stmt.close();
+		  }catch(SQLException se2){
+		  }// nothing we can do
+		  try{
+			 if(conn!=null)
+				conn.close();
+		  }catch(SQLException se){
+			 se.printStackTrace();
+		  }//end finally try
+	   }//end try
+		  return null;
+   }
 
 
-
+	public static int getEngineerID(int pID){
+		Connection conn = null;
+		Statement stmt = null;
+		int engID;
+		try{
+			Class.forName("com.mysql.jdbc.Driver");
+			conn = DriverManager.getConnection(DB_URL,USER,PASS);
+			stmt = conn.createStatement();
+			String sql; 
+			sql="SELECT * FROM Engineer WHERE PersonID = "+pID;
+			ResultSet rs = stmt.executeQuery(sql);
+			rs.first();
+			engID=rs.getInt("EngineerID");
+			rs.close();
+			stmt.close();
+			conn.close(); 
+			return engID;
+		}//try
+		catch(SQLException se){
+		  //Handle errors for JDBC
+		  se.printStackTrace();
+	   }catch(Exception e){
+		  //Handle errors for Class.forName
+		  e.printStackTrace();
+	   }finally{
+		  //finally block used to close resources
+		  try{
+			 if(stmt!=null)
+				stmt.close();
+		  }catch(SQLException se2){
+		  }// nothing we can do
+		  try{
+			 if(conn!=null)
+				conn.close();
+		  }catch(SQLException se){
+			 se.printStackTrace();
+		  }//end finally try
+	   }//end try
+		return -1;
+	}
 
 
 
