@@ -23,8 +23,10 @@ public class jncLogin extends JFrame{
 
 	public static void main(String[] args) {
 
-
-
+		// to test this login with 2, 1234. as it produces a list of tickets
+			
+			
+			
 		jncLogin frame = new jncLogin();
 		setWindowPosition(frame, 0);
 
@@ -44,7 +46,6 @@ public class jncLogin extends JFrame{
 		pass = new JPasswordField(10);
 		setLayout(new GridLayout(2,1));
 		setDefaultCloseOperation(EXIT_ON_CLOSE);
-		//setSize(800, 570);
 		JPanel pane = new JPanel(new GridLayout(2,2));
 		pane.add(new JLabel("UserID: "));
 		pane.add(name);
@@ -64,7 +65,7 @@ public class jncLogin extends JFrame{
 				}
 				else{
 					 session nsess = mySqlConnector.login(userID,password);
-					 if(nsess == null){
+					 if(nsess == null){ // if the user id or password is wrong 
 						JOptionPane.showMessageDialog(null,"Incorrect UserID or Password","Login Error",JOptionPane.ERROR_MESSAGE);
 					 }
 					 else if(nsess.getUserType()==0){ //is engineer launch engineer application
@@ -75,7 +76,9 @@ public class jncLogin extends JFrame{
 					 }
 					 else if(nsess.getUserType()==1){ // is manager launch manager application
 						System.out.println("Manager logged in!");
-						
+						/*----------
+						TODO CODE TO LAUNCH MANAGER PROGRAM!
+						------------*/
 					 }
 					 else{ //user type error call support!
 						JOptionPane.showMessageDialog(null,"User type error, Please your manager","Login Error",JOptionPane.ERROR_MESSAGE);

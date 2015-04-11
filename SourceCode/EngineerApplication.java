@@ -38,7 +38,7 @@ import net.miginfocom.swing.MigLayout;
 
 public class EngineerApplication extends JFrame {
 
-
+/*
 	static String sqlSelectNames = "SELECT Forename, Surname FROM Person;";
 	static String sqlSelectEmails = "SELECT Email FROM Person;";
 	static String sqlSelectOpenTickets = "SELECT TicketID, IssueID, Priority, TimeEntered FROM Ticket WHERE StateFlag =2;";
@@ -47,7 +47,9 @@ public class EngineerApplication extends JFrame {
 	static String sqlSelectFromTicketID = "SELECT Ticket.TicketID,  FROM ";
 	static String sqlAllTicketsJoinIssueType = "SELECT Ticket.TicketID, IssueType.IssueName, Ticket.Priority, Ticket.TimeEntered FROM Ticket INNER JOIN IssueType ON Ticket.IssueID=IssueType.IssueID;";
 	static String sqlCreateUserInfo = "SELECT Ticket.TicketID, Ticket.NoOfReferrals, Ticket.Priority, Ticket.Screenshot, Ticket.ProblemDescription, Ticket.TimeEntered, Person.Title, Person.Forename, Person.Surname, IssueType.IssueName, Person.Email, Person.PhoneNumber FROM `User` INNER JOIN Ticket ON Ticket.UserID = `User`.UserID INNER JOIN Person ON `User`.PersonID = Person.PersonID INNER JOIN IssueType ON Ticket.IssueID = IssueType.IssueID;";
-	static Vector<String> ticketTableHeaders = new Vector<String>();
+	
+	*/
+	//static Vector<String> ticketTableHeaders = new Vector<String>();
 	static int selectedTicketID = 0;
 	
 	static session engineerID;
@@ -66,7 +68,9 @@ public class EngineerApplication extends JFrame {
 	}
 
 	EngineerApplication(session eID) {
-		super("Engineer Application");
+	
+		
+		super("Engineer Application  -  "+eID.getForename()+" "+eID.getSurname()); //putting engineers name in the windows title
 		engineerID=eID;
 		buildGUI();
 
@@ -80,8 +84,8 @@ public class EngineerApplication extends JFrame {
 
 
 	//Buttons
-	private JButton openTicketsButton;
-	private JButton queueTicketsButton;
+	//private JButton openTicketsButton;
+	private JButton logOut;
 	private JButton refreshButton;
 	private JButton completeButton;
 	private JButton referButton;
@@ -102,6 +106,8 @@ public class EngineerApplication extends JFrame {
 	private JTextArea issueTypeContent;
 	private JTextArea detailsTitle;
 	private JTextArea detailsContent;
+	
+	//private JTabbedPane jtp;
 
 	//Fonts
 	Font headerFont = new Font("SansSerif", Font.PLAIN, 25);
@@ -123,8 +129,16 @@ public class EngineerApplication extends JFrame {
 	public class LeftSide extends JPanel {
 		public LeftSide() {
 			setLayout(new MigLayout("wrap 1"));
-			add(new ViewsButtonPanel(), "align center");
-			add(new TicketTable("Table", mySqlConnector.getOpenTickets(engineerID.getEngineerID())));//Where tickets are loaded from
+			//add(new ViewsButtonPanel(), "align center");
+			JTabbedPane jtp = new JTabbedPane();
+			add(jtp);
+			JPanel openTickets = new JPanel();
+			openTickets.add(new TicketTable("", mySqlConnector.getOpenTickets(engineerID.getEngineerID())));//Where tickets are loaded from
+			JPanel queuedTickets = new JPanel();
+			queuedTickets.add(new TicketTable("", mySqlConnector.getQueuedTickets(engineerID.getEngineerID())));//Where tickets are loaded from
+			jtp.addTab("Open Tickets", openTickets);
+			jtp.addTab("Queued Tickets", queuedTickets);
+			
 		}
 	}
 
@@ -142,7 +156,7 @@ public class EngineerApplication extends JFrame {
 					ticketTable[i][1]=tickets.get(i).getIssueName();
 					ticketTable[i][2]=Integer.toString(tickets.get(i).getPriority());
 					ticketTable[i][3]=miscMethods.timeSinceMethod(tickets.get(i).getTimeEntered());	
-					System.out.println("Reaches loop "+i+" "+tickets.get(i).getTicketID());					
+					//System.out.println("Reaches loop "+i+" "+tickets.get(i).getTicketID());		used for debugging
 				}
 			
 			String[] columnNames ={"TicketID","Issue Type","Priority","Time In System"};
@@ -191,12 +205,19 @@ public class EngineerApplication extends JFrame {
 		public ViewsButtonPanel() {
 			setLayout(new MigLayout());
 
-			openTicketsButton = new JButton("View Active Tickets");
-			queueTicketsButton = new JButton("View Queued Tickets");
+			
+			logOut = new JButton("Logout");
 			refreshButton = new JButton("Refresh View");
-			add(openTicketsButton);
-			add(queueTicketsButton);
+			refreshButton.addActionListener(new ActionListener() {
+				@Override
+				public void actionPerformed(ActionEvent e){
+					LeftSide.repaint();
+				}
+			
+			});
+			
 			add(refreshButton);
+			add(logOut);
 		}
 	}
 
@@ -204,7 +225,7 @@ public class EngineerApplication extends JFrame {
 		public RightSide() {
 			setLayout(new MigLayout("wrap 1"));
 
-
+			add(new ViewsButtonPanel(), "align center");
 			ticketDetailsTitle = new JTextArea("Ticket Details");
 			ticketDetailsTitle.setFont(headerFont);
 			ticketDetailsTitle.setEditable(false);

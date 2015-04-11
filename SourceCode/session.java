@@ -36,5 +36,13 @@ public class session{
 		 return mySqlConnector.getEngineerID(userID);
 		}
 	}
+	public int getManagerID(){
+		if(userType!=1){
+		return -1;
+		}
+		else{
+		 return mySqlConnector.getManagerID(userID);
+		}
+	}
 
 }
