@@ -14,8 +14,7 @@ import java.awt.Component;
 import java.awt.Font;
 import java.awt.Color;
 import java.awt.event.*;
-import java.awt.GraphicsEnvironment;
-import java.awt.GraphicsDevice;
+
 
 public class jncLogin extends JFrame{
 
@@ -28,7 +27,7 @@ public class jncLogin extends JFrame{
 			
 			
 		jncLogin frame = new jncLogin();
-		setWindowPosition(frame, 0);
+		miscMethods.setWindowPosition(frame, 0);
 
 
 
@@ -71,6 +70,7 @@ public class jncLogin extends JFrame{
 					 else if(nsess.getUserType()==0){ //is engineer launch engineer application
 						System.out.println("Engineer logged in!");
 						EngineerApplication frame = new EngineerApplication(nsess);
+						miscMethods.setWindowPosition(frame, 0);
 						setVisible(false);
 						dispose();
 					 }
@@ -96,36 +96,6 @@ public class jncLogin extends JFrame{
 
 	}
 	
-	//method to centre the window on the main screen
-	private static void setWindowPosition(JFrame window, int screen)
-	{        
-		GraphicsEnvironment env = GraphicsEnvironment.getLocalGraphicsEnvironment();
-		GraphicsDevice[] allDevices = env.getScreenDevices();
-		int topLeftX, topLeftY, screenX, screenY, windowPosX, windowPosY;
-
-		if (screen < allDevices.length && screen > -1)
-		{
-			topLeftX = allDevices[screen].getDefaultConfiguration().getBounds().x;
-			topLeftY = allDevices[screen].getDefaultConfiguration().getBounds().y;
-
-			screenX  = allDevices[screen].getDefaultConfiguration().getBounds().width;
-			screenY  = allDevices[screen].getDefaultConfiguration().getBounds().height;
-		}
-		else
-		{
-			topLeftX = allDevices[0].getDefaultConfiguration().getBounds().x;
-			topLeftY = allDevices[0].getDefaultConfiguration().getBounds().y;
-
-			screenX  = allDevices[0].getDefaultConfiguration().getBounds().width;
-			screenY  = allDevices[0].getDefaultConfiguration().getBounds().height;
-		}
-
-		windowPosX = ((screenX - window.getWidth())  / 2) + topLeftX;
-		windowPosY = ((screenY - window.getHeight()) / 2) + topLeftY;
-
-		window.setLocation(windowPosX, windowPosY);
-	}
-
 
 
 

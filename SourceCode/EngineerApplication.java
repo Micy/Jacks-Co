@@ -78,6 +78,7 @@ public class EngineerApplication extends JFrame {
 		setSize(800, 570);
 		//pack();
 		setVisible(true);
+		setResizable(false);
 
 
 	}
@@ -184,6 +185,7 @@ public class EngineerApplication extends JFrame {
 					int[] newEntry = new int[] {row, col}; //{row,col}=selected cell
 					System.out.println(leftTable.getValueAt(row,0));
 					//System.out.println(row);
+					//referralsContent.setText(Integer.toString(tickets.get(leftTable.getValueAt(row,0)).getgetNoOfReferrals()));
 					
 
 				}
@@ -207,11 +209,23 @@ public class EngineerApplication extends JFrame {
 
 			
 			logOut = new JButton("Logout");
+			logOut.addActionListener(new ActionListener() {
+				@Override
+				public void actionPerformed(ActionEvent e){
+						System.out.println("Engineer logged out!");
+						jncLogin frame = new jncLogin();
+						miscMethods.setWindowPosition(frame, 0);
+						setVisible(false);
+						dispose();
+				}
+			
+			});
+			
 			refreshButton = new JButton("Refresh View");
 			refreshButton.addActionListener(new ActionListener() {
 				@Override
 				public void actionPerformed(ActionEvent e){
-					LeftSide.repaint();
+					//LeftSide.repaint();
 				}
 			
 			});
