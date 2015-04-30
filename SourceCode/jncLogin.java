@@ -76,9 +76,10 @@ public class jncLogin extends JFrame{
 					 }
 					 else if(nsess.getUserType()==1){ // is manager launch manager application
 						System.out.println("Manager logged in!");
-						/*----------
-						TODO CODE TO LAUNCH MANAGER PROGRAM!
-						------------*/
+						ManagerApplication frame = new ManagerApplication(nsess);
+						miscMethods.setWindowPosition(frame, 0);
+						setVisible(false);
+						dispose();
 					 }
 					 else{ //user type error call support!
 						JOptionPane.showMessageDialog(null,"User type error, Please your manager","Login Error",JOptionPane.ERROR_MESSAGE);
