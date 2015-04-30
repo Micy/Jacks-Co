@@ -119,6 +119,8 @@ public class EngineerApplication extends JFrame {
 	protected TicketTable queuedTicketsTable;
 	
 	protected static JTable table1;
+
+	protected List<Ticket> tickets;
 	
 	//Fonts
 	Font headerFont = new Font("SansSerif", Font.PLAIN, 25);
@@ -133,6 +135,8 @@ public class EngineerApplication extends JFrame {
 	
 		//buttonMenu = new JPanel();
 		add(new buttonMenu(),"dock north");
+
+
 	
 		openTickets = new JPanel();
 			openTickets.add(new LeftSide());//table side
@@ -145,7 +149,7 @@ public class EngineerApplication extends JFrame {
 		public LeftSide() {
 			setLayout(new MigLayout("wrap 1"));
 			JScrollPane jScrollPane = new JScrollPane();
-			List<Ticket> tickets = mySqlConnector.getOpenTickets(engineerID.getEngineerID());
+			tickets = mySqlConnector.getOpenTickets(engineerID.getEngineerID());
 			openTicketsTable = new TicketTable(tickets);
 			
 			if(tickets != null){
@@ -338,7 +342,34 @@ public class EngineerApplication extends JFrame {
 			});
 			
 			viewDetails = new JButton("View Details");
-			
+
+			viewDetails.addActionListener(new ActionListener(){
+				@Override
+				public void actionPerformed(ActionEvent e){
+
+					int row = table1.getSelectedRow();
+					int col = table1.getSelectedColumn();
+					if(col == -1 || row == -1){
+						JOptionPane.showMessageDialog(null,"Please Select a Ticket","No Ticket Selected",JOptionPane.WARNING_MESSAGE);
+					}
+					else{
+						int[] newEntry = new int[] {row, col}; //{row,col}=selected cell
+						//System.out.println(table1.getValueAt(row,0));
+						//System.out.println(row);
+						int ticketID = Integer.valueOf(String.valueOf(table1.getValueAt(row,0)));
+
+						openTicketDetailsWindow frame = new openTicketDetailsWindow(miscMethods.findTicketByID(ticketID,tickets));
+						miscMethods.setWindowPosition(frame, 0);
+						System.out.println("View Details Pressed!  "+ticketID);
+						
+					}
+					
+				}
+
+			});
+
+
+
 			add(refreshButton);
 			add(viewDetails);
 			add(queuedView);
@@ -356,8 +387,20 @@ public class EngineerApplication extends JFrame {
 						int row = table1.rowAtPoint(e.getPoint());//get mouse-selected row
 						int col = table1.columnAtPoint(e.getPoint());//get mouse-selected col
 						int[] newEntry = new int[] {row, col}; //{row,col}=selected cell
-						System.out.println(table1.getValueAt(row,0));
-						
+						System.out.println("Here!  "+table1.getValueAt(row,0));
+						//int id = table1.getValueAt(row,0);
+
+						int id = Integer.valueOf(String.valueOf(table1.getValueAt(row,0)));
+
+						Ticket t = miscMethods.findTicketByID(id, tickets);
+
+						timeSubmittedContent.setText(miscMethods.convertTime(t.getTimeEntered()));
+
+						referralsContent.setText(Integer.toString(t.getNoOfReferrals()));
+
+						priorityContent.setText(Integer.toString(t.getPriority()));
+
+
 						//timeSubmittedContent
 						
 						

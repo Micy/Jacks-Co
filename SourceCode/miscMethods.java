@@ -13,6 +13,8 @@ import java.awt.Component;
 import java.awt.Font;
 import java.awt.Color;
 import java.awt.event.*;
+import java.text.Format;
+import java.text.SimpleDateFormat;
 
 public class miscMethods{
 
@@ -102,6 +104,23 @@ public class miscMethods{
 				}
 		return ticketTable;
 	
+	}
+
+	public static String convertTime(long time){
+	    Date date = new Date(time);
+	    Format format = new SimpleDateFormat("yyyy MM dd HH:mm:ss");
+	    return format.format(date);
+	}
+
+	public static Ticket findTicketByID(int ticketID, List<Ticket> tickets){
+		for(int i =0; i<tickets.size(); i++){
+			if(tickets.get(i).getTicketID()==ticketID){
+
+				return tickets.get(i);
+			}
+
+		}
+		return null;
 	}
 
 }

@@ -573,6 +573,53 @@ public class mySqlConnector {
 	   return false;
 		
 	}
+
+	public static User getUserbyID(int uID){
+	  Connection conn = null;
+      Statement stmt = null;
+     
+      try{
+         Class.forName("com.mysql.jdbc.Driver");
+         conn = DriverManager.getConnection(DB_URL,USER,PASS);
+         stmt = conn.createStatement();
+         //Ticket t;
+         String sql; 
+         sql = "SELECT * FROM User, Person WHERE User.PersonID=Person.PersonID AND User.UserID="+uID;  
+         ResultSet rs = stmt.executeQuery(sql);
+         rs.first();
+         User t = new User(rs.getInt("UserID"),rs.getInt("PersonID"),rs.getString("Title"),rs.getString("Forename"),rs.getString("Surname"),rs.getString("Email"),rs.getString("PhoneNumber"),rs.getString("Password"),rs.getString("Salt"));
+         rs.close();
+         stmt.close();
+         conn.close(); 
+         return t;
+      }//try
+      catch(SQLException se){
+      //Handle errors for JDBC
+      se.printStackTrace();
+   }catch(Exception e){
+      //Handle errors for Class.forName
+      e.printStackTrace();
+   }finally{
+      //finally block used to close resources
+      try{
+         if(stmt!=null)
+            stmt.close();
+      }catch(SQLException se2){
+      }// nothing we can do
+      try{
+         if(conn!=null)
+            conn.close();
+      }catch(SQLException se){
+         se.printStackTrace();
+      }//end finally try
+   }//end try
+      return null;
+
+
+		
+	}
+
+
 	
 	public static boolean completeTicket(int ticketID){
 		Connection conn = null;
@@ -583,7 +630,7 @@ public class mySqlConnector {
 			stmt = conn.createStatement();
 			String sql; 
 			sql="UPDATE Ticket SET StateFlag = 3 Where TicketID = "+ticketID;
-			stmt.executeQuery(sql);
+			stmt.executeUpdate(sql);
 			stmt.close();
 			conn.close(); 
 			return true;
@@ -611,6 +658,9 @@ public class mySqlConnector {
 	   return false;
 		
 	}
+
+
+	
 	
 	
 	

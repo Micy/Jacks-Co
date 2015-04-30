@@ -58,7 +58,7 @@ public class Ticket
 		return stateFlag;
 	}
 	
-	public Object getProblemDesc()
+	public String getProblemDesc()
 	{
 		return problemDescription;
 	}
