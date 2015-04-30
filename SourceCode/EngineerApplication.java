@@ -75,7 +75,7 @@ public class EngineerApplication extends JFrame {
 		buildGUI();
 
 		setDefaultCloseOperation(EXIT_ON_CLOSE);
-		setSize(800, 570);
+		setSize(800, 600);
 		//pack();
 		setVisible(true);
 		setResizable(false);
@@ -90,6 +90,8 @@ public class EngineerApplication extends JFrame {
 	private JButton refreshButton;
 	private JButton completeButton;
 	private JButton referButton;
+	private JButton viewDetails;
+	private static JButton queuedView;
 
 	//Text areas
 	private JTextArea ticketDetailsTitle;
@@ -108,8 +110,16 @@ public class EngineerApplication extends JFrame {
 	private JTextArea detailsTitle;
 	private JTextArea detailsContent;
 	
-	//private JTabbedPane jtp;
-
+	private JTabbedPane jtp;
+	private JPanel openTickets;
+	private JPanel queuedTickets;
+	//private JPanel buttonMenu;
+	
+	protected static TicketTable openTicketsTable;
+	protected TicketTable queuedTicketsTable;
+	
+	protected static JTable table1;
+	
 	//Fonts
 	Font headerFont = new Font("SansSerif", Font.PLAIN, 25);
 	Font titleFont = new Font("SansSerif", Font.PLAIN, 15);
@@ -120,88 +130,50 @@ public class EngineerApplication extends JFrame {
 
 	private void buildGUI() {
 		setLayout(new MigLayout());
-
-		add(new LeftSide());
-		add(new RightSide());
-
-
+	
+		//buttonMenu = new JPanel();
+		add(new buttonMenu(),"dock north");
+	
+		openTickets = new JPanel();
+			openTickets.add(new LeftSide());//table side
+			openTickets.add(new RightSide());//info side
+		add(openTickets);
+	
 	}
 
 	public class LeftSide extends JPanel {
 		public LeftSide() {
 			setLayout(new MigLayout("wrap 1"));
-			//add(new ViewsButtonPanel(), "align center");
-			JTabbedPane jtp = new JTabbedPane();
-			add(jtp);
-			JPanel openTickets = new JPanel();
-			openTickets.add(new TicketTable("", mySqlConnector.getOpenTickets(engineerID.getEngineerID())));//Where tickets are loaded from
-			JPanel queuedTickets = new JPanel();
-			queuedTickets.add(new TicketTable("", mySqlConnector.getQueuedTickets(engineerID.getEngineerID())));//Where tickets are loaded from
-			jtp.addTab("Open Tickets", openTickets);
-			jtp.addTab("Queued Tickets", queuedTickets);
+			JScrollPane jScrollPane = new JScrollPane();
+			List<Ticket> tickets = mySqlConnector.getOpenTickets(engineerID.getEngineerID());
+			openTicketsTable = new TicketTable(tickets);
 			
+			if(tickets != null){
+				table1 = new JTable();
+				table1.setModel(openTicketsTable);
+				jScrollPane.getViewport().add(table1, null);
+				openTickets.add(jScrollPane);//Where tickets are loaded from
+				
+				
+				table1.addMouseListener(tableMouseListener);
+				table1.getTableHeader().setReorderingAllowed(false);
+				
+				
+				
+
+			table1.addMouseListener(tableMouseListener);
+
+				
+				
+				
+				
+			}
+			else{
+				openTickets.add(new JTextArea("No Open Tickets Available!"));
+			}
 		}
 	}
-
-
-	public class TicketTable extends JPanel {
-
-		public TicketTable(String tableTitle, List<Ticket> tickets) {
-
-			int tSize = tickets.size();
-			String[][] ticketTable = new String[tSize][4];
-			
-			for (int i=0; i<tSize; i++){
-					
-					ticketTable[i][0]=Integer.toString(tickets.get(i).getTicketID());
-					ticketTable[i][1]=tickets.get(i).getIssueName();
-					ticketTable[i][2]=Integer.toString(tickets.get(i).getPriority());
-					ticketTable[i][3]=miscMethods.timeSinceMethod(tickets.get(i).getTimeEntered());	
-					//System.out.println("Reaches loop "+i+" "+tickets.get(i).getTicketID());		used for debugging
-				}
-			
-			String[] columnNames ={"TicketID","Issue Type","Priority","Time In System"};
-			final JTable leftTable = new JTable(ticketTable, columnNames);
-
-			add(new JScrollPane(leftTable));
-
-			leftTable.getColumnModel().getColumn(0).setPreferredWidth(53);
-			leftTable.getColumnModel().getColumn(1).setPreferredWidth(130);
-			leftTable.getColumnModel().getColumn(2).setPreferredWidth(50);
-			leftTable.getColumnModel().getColumn(3).setPreferredWidth(130);
-
-			setBorder(new TitledBorder(new EtchedBorder(),	tableTitle));
-			setPreferredSize(new Dimension(470, 500));
-
-
-
-			MouseListener tableMouseListener = new MouseAdapter() {
-
-				@Override
-				public void mouseClicked(MouseEvent e) {
-
-					int row = leftTable.rowAtPoint(e.getPoint());//get mouse-selected row
-					int col = leftTable.columnAtPoint(e.getPoint());//get mouse-selected col
-					int[] newEntry = new int[] {row, col}; //{row,col}=selected cell
-					System.out.println(leftTable.getValueAt(row,0));
-					//System.out.println(row);
-					//referralsContent.setText(Integer.toString(tickets.get(leftTable.getValueAt(row,0)).getgetNoOfReferrals()));
-					
-
-				}
-			};
-
-			leftTable.addMouseListener(tableMouseListener);
-			leftTable.getTableHeader().setReorderingAllowed(false);
-
-
-
-
-
-
-		}
-
-	}
+	
 
 	public class ViewsButtonPanel extends JPanel {
 		public ViewsButtonPanel() {
@@ -221,16 +193,33 @@ public class EngineerApplication extends JFrame {
 			
 			});
 			
+			queuedView = new JButton("Queued Tickets");
+			queuedView.addActionListener(new ActionListener() {
+				@Override
+				public void actionPerformed(ActionEvent e){
+						System.out.println("Queued Tickets Loaded");
+						QueuedTicketPopup frame = new QueuedTicketPopup(mySqlConnector.getQueuedTickets(engineerID.getEngineerID()));
+						miscMethods.setWindowPosition(frame, 0);
+						queuedView.setEnabled(false);
+						//setVisible(false);
+						//dispose();
+				}
+			
+			});
+			
+			
 			refreshButton = new JButton("Refresh View");
 			refreshButton.addActionListener(new ActionListener() {
 				@Override
 				public void actionPerformed(ActionEvent e){
-					//LeftSide.repaint();
+					refreshTable();
+					
 				}
 			
 			});
 			
 			add(refreshButton);
+			add(queuedView);
 			add(logOut);
 		}
 	}
@@ -239,7 +228,7 @@ public class EngineerApplication extends JFrame {
 		public RightSide() {
 			setLayout(new MigLayout("wrap 1"));
 
-			add(new ViewsButtonPanel(), "align center");
+			//add(new ViewsButtonPanel(), "align center");
 			ticketDetailsTitle = new JTextArea("Ticket Details");
 			ticketDetailsTitle.setFont(headerFont);
 			ticketDetailsTitle.setEditable(false);
@@ -262,13 +251,13 @@ public class EngineerApplication extends JFrame {
 
 			timeSubmittedTitle = new JTextArea("Time Submitted:");
 			timeSubmittedTitle.setBackground(defaultGrey);
-			timeSubmittedContent = new JTextArea("blurgh");
+			timeSubmittedContent = new JTextArea("No Ticket Selected");
 			referralsTitle = new JTextArea("Referrals:");
 			referralsTitle.setBackground(defaultGrey);
-			referralsContent = new JTextArea("blargh");
+			referralsContent = new JTextArea("No Ticket Selected");
 			priorityTitle = new JTextArea("Ticket Priority: ");
 			priorityTitle.setBackground(defaultGrey);
-			priorityContent = new JTextArea("blloght");
+			priorityContent = new JTextArea("No Ticket Selected");
 			timeSubmittedTitle.setFont(titleFont);
 			timeSubmittedContent.setFont(titleFont);
 			referralsTitle.setFont(titleFont);
@@ -301,101 +290,121 @@ public class EngineerApplication extends JFrame {
 			setPreferredSize(new Dimension(263, 100));
 
 		}
+		
+	
 
 	}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-	/*
-	public static void dbConnectOpenTickets() {
-		MySqlConnector showOpenTickets = new MySqlConnector(sqlSelectOpenTickets);
-
-		List<Ticket> openTickets = showOpenTickets.returnTicketList();
-		for (int i = 0; i < openTickets.size(); i++) {
-			System.out.println("Ticket ID: " + openTickets.get(i).getTicketID());
-			System.out.println("Issue ID: " + openTickets.get(i).getIssueID());
-			System.out.println("Priority: " + openTickets.get(i).getPriority());
-
-			timeSinceMethod(openTickets.get(i).getTimeEntered());
-
-
-
-			System.out.print("\n");
-
+	
+	
+	public class buttonMenu extends JPanel{
+	
+		public buttonMenu(){
+			logOut = new JButton("Logout");
+			logOut.addActionListener(new ActionListener() {
+				@Override
+				public void actionPerformed(ActionEvent e){
+						System.out.println("Engineer logged out!");
+						jncLogin frame = new jncLogin();
+						miscMethods.setWindowPosition(frame, 0);
+						setVisible(false);
+						dispose();
+				}
+			
+			});
+			
+			queuedView = new JButton("Queued Tickets");
+			queuedView.addActionListener(new ActionListener() {
+				@Override
+				public void actionPerformed(ActionEvent e){
+						System.out.println("Queued Tickets Loaded");
+						QueuedTicketPopup frame = new QueuedTicketPopup(mySqlConnector.getQueuedTickets(engineerID.getEngineerID()));
+						miscMethods.setWindowPosition(frame, 0);
+						queuedView.setEnabled(false);
+						//setVisible(false);
+						//dispose();
+				}
+			
+			});
+			
+			
+			refreshButton = new JButton("Refresh View");
+			refreshButton.addActionListener(new ActionListener() {
+				@Override
+				public void actionPerformed(ActionEvent e){
+					refreshTable();
+					
+				}
+			
+			});
+			
+			viewDetails = new JButton("View Details");
+			
+			add(refreshButton);
+			add(viewDetails);
+			add(queuedView);
+			add(logOut);
 		}
 	}
+	
+	MouseListener tableMouseListener = new MouseAdapter() {
 
-	public static void dbConnectQueueTickets() {
-		MySqlConnector showQueueTickets = new MySqlConnector(sqlSelectQueueTickets);
+				
+				
+					@Override
+					public void mouseClicked(MouseEvent e) {
 
-		List<Ticket> queueTickets = showQueueTickets.returnTicketList();
-		for (int i = 0; i < queueTickets.size(); i++) {
-			System.out.println("Ticket ID: " + queueTickets.get(i).getTicketID());
-			System.out.println("Issue ID: " + queueTickets.get(i).getIssueID());
-			System.out.println("Priority: " + queueTickets.get(i).getPriority());
+						int row = table1.rowAtPoint(e.getPoint());//get mouse-selected row
+						int col = table1.columnAtPoint(e.getPoint());//get mouse-selected col
+						int[] newEntry = new int[] {row, col}; //{row,col}=selected cell
+						System.out.println(table1.getValueAt(row,0));
+						
+						//timeSubmittedContent
+						
+						
+						//System.out.println(row);
+						//referralsContent.setText(Integer.toString(tickets.get(leftTable.getValueAt(row,0)).getgetNoOfReferrals()));
+						
 
-			timeSinceMethod(queueTickets.get(i).getTimeEntered());
-			System.out.print("\n");
-
-		}
+					}
+				};
+	
+	public static int getCurrentEngineerID(){
+		return engineerID.getEngineerID();
+	}
+	
+	public static void queuedViewClosed(){
+	
+		queuedView.setEnabled(true);
+		refreshTable();
+		
+	
+	}
+	
+	public static void refreshTable(){
+	
+		List<Ticket> tickets = mySqlConnector.getOpenTickets(engineerID.getEngineerID());
+		openTicketsTable = new TicketTable(tickets);
+		table1.setModel(openTicketsTable);		
+	
 	}
 
-	public static void dbConnectSendEmail() {
-		String user_input = "Miles";
-		sqlSelectEmails = "SELECT Email FROM Person WHERE Forename =\'" + user_input + "\';";
-		//System.out.println(sqlSelectEmails);
-
-		//Being able to send an email works here
-		MySqlConnector showAll = new MySqlConnector(sqlSelectEmails);
-		String returnedEmail = showAll.returnEmail();
-		Emailexample sendgridEmail = new Emailexample(returnedEmail);
-		sendgridEmail.sendEmail();
-	}
-
-	public static void dbConnectAcceptTicket(int tID) {
-
-		String sqlUpdateStateFlag = "UPDATE Ticket SET StateFlag=3 WHERE TicketID=\'" + tID + "\';";
 
 
-		//Being able to send an email works here
-		MySqlConnector setStateFlagAccept = new MySqlConnector(sqlUpdateStateFlag);
-		setStateFlagAccept.acceptTicket();
-		System.out.println(tID + " changed");
 
-	}
-*/
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 	public static void timeSinceMethod(long tmEntrd) {
 
 		long currentTime = System.currentTimeMillis();

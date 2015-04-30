@@ -5,14 +5,14 @@ public class Ticket
 	private int userID;
 	private int engineerID;
 	private int issueID;
-	private int stateFlag;
+	private int stateFlag;//Queued:1 Open:2 Completed:3 or Aborted:4
 	private String problemDescription;
 	private int noOfReferrals;
 	private String referralHistory;
 	private int priority;
-	private String screenshot; //wasn't sure how to store this
-	private long timeEntered; //or this
-	private long timeCompleted; //or this
+	private String screenshot; 
+	private long timeEntered; 
+	private long timeCompleted; 
 	
 	public Ticket(int tID, int uID, int eID, int iID, long timeE, int sFlag, String pDesc, String screenShot, long timeC, int noOfRef, String refHist, int priority){
 	

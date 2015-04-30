@@ -86,6 +86,23 @@ public class miscMethods{
 
 		window.setLocation(windowPosX, windowPosY);
 	}
+	
+	public static String[][] createTicketTable(List<Ticket> tickets){//returns a string table of details to be used in tables about tickets
+		
+		int tSize = tickets.size();
+		String[][] ticketTable = new String[tSize][4];
+			
+			for (int i=0; i<tSize; i++){
+					
+					ticketTable[i][0]=Integer.toString(tickets.get(i).getTicketID());
+					ticketTable[i][1]=tickets.get(i).getIssueName();
+					ticketTable[i][2]=Integer.toString(tickets.get(i).getPriority());
+					ticketTable[i][3]=miscMethods.timeSinceMethod(tickets.get(i).getTimeEntered());	
+					//System.out.println("Reaches loop "+i+" "+tickets.get(i).getTicketID());		used for debugging
+				}
+		return ticketTable;
+	
+	}
 
 }
 
