@@ -68,7 +68,7 @@ public class Ticket
 		return noOfReferrals;
 	}
 	
-	public Object getReferralHistory()
+	public String getReferralHistory()
 	{
 		return referralHistory;
 	}
@@ -78,7 +78,7 @@ public class Ticket
 		return priority;
 	}
 	
-	public  Object getScreenshot()
+	public  String getScreenshot()
 	{
 		return screenshot;
 	}

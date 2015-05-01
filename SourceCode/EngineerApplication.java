@@ -70,13 +70,13 @@ public class EngineerApplication extends JFrame {
 	EngineerApplication(session eID) {
 	
 		
-		super("Engineer Application  -  "+eID.getForename()+" "+eID.getSurname()); //putting engineers name in the windows title
+		super("Engineer Application  Open Tickets - "+eID.getForename()+" "+eID.getSurname()); //putting engineers name in the windows title
 		engineerID=eID;
 		buildGUI();
 
 		setDefaultCloseOperation(EXIT_ON_CLOSE);
-		setSize(800, 600);
-		//pack();
+		//setSize(800, 600);
+		pack();
 		setVisible(true);
 		setResizable(false);
 
@@ -109,6 +109,8 @@ public class EngineerApplication extends JFrame {
 	private JTextArea issueTypeContent;
 	private JTextArea detailsTitle;
 	private JTextArea detailsContent;
+
+	//private JTextArea openTicketsTitle;
 	
 	private JTabbedPane jtp;
 	private JPanel openTickets;
@@ -139,19 +141,22 @@ public class EngineerApplication extends JFrame {
 
 	
 		openTickets = new JPanel();
-			openTickets.add(new LeftSide());//table side
-			openTickets.add(new RightSide());//info side
+			openTickets.add(new LeftSide(),"grow");//table side
+			openTickets.add(new RightSide(),"grow");//info side
 		add(openTickets);
 	
 	}
 
 	public class LeftSide extends JPanel {
 		public LeftSide() {
-			setLayout(new MigLayout("wrap 1"));
+			setLayout(new MigLayout("wrap"));
+
 			JScrollPane jScrollPane = new JScrollPane();
 			tickets = mySqlConnector.getOpenTickets(engineerID.getEngineerID());
 			openTicketsTable = new TicketTable(tickets);
-			
+			//openTicketsTitle = new JTextArea("Open Tickets");
+			//openTicketsTitle.setBackground(defaultGrey);
+			//add(openTicketsTitle,"wrap");
 			if(tickets != null){
 				table1 = new JTable();
 				table1.setModel(openTicketsTable);
@@ -239,7 +244,7 @@ public class EngineerApplication extends JFrame {
 			ticketDetailsTitle.setBackground(defaultGrey);
 			add(ticketDetailsTitle);
 
-			add(new TicketDetailsPanel());
+			add(new TicketDetailsPanel(),"growx");
 			setPreferredSize(new Dimension(263, 500));
 
 		}
@@ -357,8 +362,8 @@ public class EngineerApplication extends JFrame {
 						//System.out.println(table1.getValueAt(row,0));
 						//System.out.println(row);
 						int ticketID = Integer.valueOf(String.valueOf(table1.getValueAt(row,0)));
-
-						openTicketDetailsWindow frame = new openTicketDetailsWindow(miscMethods.findTicketByID(ticketID,tickets));
+						List<Ticket> t = mySqlConnector.getOpenTickets(engineerID.getEngineerID());
+						openTicketDetailsWindow frame = new openTicketDetailsWindow(miscMethods.findTicketByID(ticketID,t));
 						miscMethods.setWindowPosition(frame, 0);
 						System.out.println("View Details Pressed!  "+ticketID);
 						

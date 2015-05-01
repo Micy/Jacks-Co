@@ -129,6 +129,7 @@ public class openTicketDetailsWindow extends JFrame{
 			descriptiont.setBackground(defaultGrey);
 			add(descriptiont);
 			description = new JTextArea(ticket.getProblemDesc(),4,25);
+			description.setLineWrap(true);
 			add(description);
 
 
