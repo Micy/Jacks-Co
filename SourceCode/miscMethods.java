@@ -122,6 +122,37 @@ public class miscMethods{
 		}
 		return null;
 	}
+	
+	public static String[] getListOfEngNames(List<Engineer> engs){
+	
+		int size = engs.size();
+		
+		String[] engNames = new String[size];
+		
+		for(int i=0; i<size; i++){
+			engNames[i]=engs.get(i).getForename()+" "+engs.get(i).getSurname();
+		}
+		return engNames;
+	
+	}
+	
+	public static int getEngIdFromNameString(List<Engineer> engs, String name){
+	
+		int size = engs.size();
+		
+		String[] engNames = new String[size];
+		int[] ids = new int[size];
+		for(int i=0; i<size; i++){
+			engNames[i]=engs.get(i).getForename()+" "+engs.get(i).getForename();
+			if(engNames[i].equals(name)){
+				return engs.get(i).getEngineerID();
+			}
+			
+		}
+		return -1;
+	
+	}
+	
 
 }
 

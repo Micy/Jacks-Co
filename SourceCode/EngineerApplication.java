@@ -122,7 +122,7 @@ public class EngineerApplication extends JFrame {
 	
 	protected static JTable table1;
 
-	protected List<Ticket> tickets;
+	private List<Ticket> tickets;
 	
 	//Fonts
 	Font headerFont = new Font("SansSerif", Font.PLAIN, 25);
@@ -417,6 +417,7 @@ public class EngineerApplication extends JFrame {
 				};
 	
 	public static int getCurrentEngineerID(){
+		//System.out.println(engineerID.getEngineerID());
 		return engineerID.getEngineerID();
 	}
 	

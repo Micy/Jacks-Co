@@ -1,5 +1,7 @@
 import java.sql.*;
 import java.util.*;
+import java.util.*;
+import java.util.concurrent.TimeUnit;
 
 //javac -classpath .;mysqlconnector.jar mySqlConnector.java
 //java -classpath .;mysqlconnector.jar mySqlConnector
@@ -184,6 +186,50 @@ public class mySqlConnector {
          ResultSet rs = stmt.executeQuery(sql);
          while(rs.next()){
          list.add(new Engineer(rs.getInt("EngineerID"),rs.getInt("ExpertiseID"),rs.getInt("Availability"),rs.getInt("ManagerID"),rs.getInt("PersonID"),rs.getString("Title"),rs.getString("Forename"),rs.getString("Surname"),rs.getString("Email"),rs.getString("PhoneNumber"),rs.getString("Password"),rs.getString("Salt")));
+         }
+
+
+         rs.close();
+         stmt.close();
+         conn.close(); 
+         return list;
+      }//try
+      catch(SQLException se){
+      //Handle errors for JDBC
+      se.printStackTrace();
+   }catch(Exception e){
+      //Handle errors for Class.forName
+      e.printStackTrace();
+   }finally{
+      //finally block used to close resources
+      try{
+         if(stmt!=null)
+            stmt.close();
+      }catch(SQLException se2){
+      }// nothing we can do
+      try{
+         if(conn!=null)
+            conn.close();
+      }catch(SQLException se){
+         se.printStackTrace();
+      }//end finally try
+   }//end try
+      return null;
+   }
+   
+      public static List<Engineer> getAllEngineers(){
+      Connection conn = null;
+      Statement stmt = null;
+      List<Engineer> list = new Vector<Engineer>();
+      try{
+         Class.forName("com.mysql.jdbc.Driver");
+         conn = DriverManager.getConnection(DB_URL,USER,PASS);
+         stmt = conn.createStatement();
+         String sql;
+         sql = "SELECT * FROM Person, Engineer WHERE Engineer.PersonID = Person.PersonID";
+         ResultSet rs = stmt.executeQuery(sql);
+         while(rs.next()){
+			list.add(new Engineer(rs.getInt("EngineerID"),rs.getInt("ExpertiseID"),rs.getInt("Availability"),rs.getInt("ManagerID"),rs.getInt("PersonID"),rs.getString("Title"),rs.getString("Forename"),rs.getString("Surname"),rs.getString("Email"),rs.getString("PhoneNumber"),rs.getString("Password"),rs.getString("Salt")));
          }
 
 
@@ -573,6 +619,44 @@ public class mySqlConnector {
 	   return false;
 		
 	}
+	
+	public static boolean referTicket(int ticketID, int newEngID, int refNo){
+		Connection conn = null;
+		Statement stmt = null;
+		try{
+			Class.forName("com.mysql.jdbc.Driver");
+			conn = DriverManager.getConnection(DB_URL,USER,PASS);
+			stmt = conn.createStatement();
+			String sql; 
+			sql="UPDATE Ticket SET StateFlag = 1, EngineerID ="+newEngID+", NoOfReferrals="+refNo+" Where TicketID = "+ticketID;
+			stmt.executeUpdate(sql);
+			stmt.close();
+			conn.close(); 
+			return true;
+		}//try
+		catch(SQLException se){
+		  //Handle errors for JDBC
+		  se.printStackTrace();
+	   }catch(Exception e){
+		  //Handle errors for Class.forName
+		  e.printStackTrace();
+	   }finally{
+		  //finally block used to close resources
+		  try{
+			 if(stmt!=null)
+				stmt.close();
+		  }catch(SQLException se2){
+		  }// nothing we can do
+		  try{
+			 if(conn!=null)
+				conn.close();
+		  }catch(SQLException se){
+			 se.printStackTrace();
+		  }//end finally try
+	   }//end try
+	   return false;
+		
+	}
 
 	public static User getUserbyID(int uID){
 	  Connection conn = null;
@@ -596,9 +680,9 @@ public class mySqlConnector {
       catch(SQLException se){
       //Handle errors for JDBC
       se.printStackTrace();
-   }catch(Exception e){
+   }catch(Exception e1){
       //Handle errors for Class.forName
-      e.printStackTrace();
+      e1.printStackTrace();
    }finally{
       //finally block used to close resources
       try{
@@ -618,6 +702,49 @@ public class mySqlConnector {
 
 		
 	}
+	
+	public static Engineer getEngineer(int eID){
+	
+		Connection conn = null;
+		Statement stmt = null;
+		Engineer eng;
+		try{
+			Class.forName("com.mysql.jdbc.Driver");
+			conn = DriverManager.getConnection(DB_URL,USER,PASS);
+			stmt = conn.createStatement();
+			String sql; 
+			sql="SELECT * FROM Engineer, Person WHERE Person.PersonID = Engineer.PersonID AND EngineerID = "+eID;
+			ResultSet rs = stmt.executeQuery(sql);
+			rs.first();
+			eng = new Engineer(rs.getInt("EngineerID"),rs.getInt("ExpertiseID"),rs.getInt("Availability"),rs.getInt("ManagerID"),rs.getInt("PersonID"),rs.getString("Title"),rs.getString("Forename"),rs.getString("Surname"),rs.getString("Email"),rs.getString("PhoneNumber"),rs.getString("Password"),rs.getString("Salt"));
+			rs.close();
+			stmt.close();
+			conn.close(); 
+			return eng;
+		}//try
+		catch(SQLException se){
+		  //Handle errors for JDBC
+		  se.printStackTrace();
+	   }catch(Exception e){
+		  //Handle errors for Class.forName
+		  e.printStackTrace();
+	   }finally{
+		  //finally block used to close resources
+		  try{
+			 if(stmt!=null)
+				stmt.close();
+		  }catch(SQLException se2){
+		  }// nothing we can do
+		  try{
+			 if(conn!=null)
+				conn.close();
+		  }catch(SQLException se){
+			 se.printStackTrace();
+		  }//end finally try
+	   }//end try
+		return null;
+	
+	}
 
 
 	
@@ -629,7 +756,8 @@ public class mySqlConnector {
 			conn = DriverManager.getConnection(DB_URL,USER,PASS);
 			stmt = conn.createStatement();
 			String sql; 
-			sql="UPDATE Ticket SET StateFlag = 3 Where TicketID = "+ticketID;
+			//Timestamp ts = new Timestamp(System.currentTimeMillis());
+			sql="UPDATE Ticket SET StateFlag = 3, CompletedTime=CURRENT_TIMESTAMP Where TicketID = "+ticketID;
 			stmt.executeUpdate(sql);
 			stmt.close();
 			conn.close(); 
@@ -688,10 +816,10 @@ public class mySqlConnector {
             System.out.println(users.get(i).getUserID()+users.get(i).getForename());
       }
 	  
-	  List<Ticket> tickets = getOpenTickets(1);
+	  List<Ticket> tickets = getAllManagersTickets(2);
 	  
 	  
-	  System.out.println("Tickets for Engineer 1:  ");
+	  System.out.println("Tickets for Manager 1:  ");
 	   for (int i=0; i<tickets.size(); i++){
             System.out.println(tickets.get(i).getTicketID()+"    "+tickets.get(i).getProblemDesc());
       }

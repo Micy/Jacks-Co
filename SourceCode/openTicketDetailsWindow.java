@@ -1,9 +1,18 @@
-
+//javac -classpath .;mysqlconnector.jar;sendgrid.jar;miglayout.jar openTicketDetailsWindow.java
 
 import javax.swing.*;
 import java.util.*;
 import java.awt.Color;
 import java.awt.event.*;
+
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+
+import java.awt.Desktop;  
+import java.io.IOException;  
+import java.net.URI;  
+import java.net.URISyntaxException;  
+
 
 //MigLayout
 import net.miginfocom.layout.Grid;
@@ -71,7 +80,13 @@ public class openTicketDetailsWindow extends JFrame{
 							if(mySqlConnector.completeTicket(ticket.getTicketID())){
 								JOptionPane.showMessageDialog(null,"Ticket Successfully Completed","Ticket Successfully Completed",JOptionPane.PLAIN_MESSAGE);
 
-
+								
+								User user = mySqlConnector.getUserbyID(t.getUserID());
+								if(Emailer.ticketCompleted(t,user)){
+								}
+								else{
+									JOptionPane.showMessageDialog(null,"Error sending confirmation email","Confirmation e-mail not sent!, Please Contact user manually!",JOptionPane.ERROR_MESSAGE);	
+								}
 
 								//Email TO DO	
 
@@ -96,6 +111,31 @@ public class openTicketDetailsWindow extends JFrame{
 
 
 		});
+		
+		email.addMouseListener(new MouseAdapter(){
+			public void mouseClicked(MouseEvent e) {
+				if(sendEmail()){}
+				else{
+					JOptionPane.showMessageDialog(null,"Error opening mail application","Error opening mail application",JOptionPane.ERROR_MESSAGE);
+				}
+			}
+		});
+		
+		refer.addActionListener(new ActionListener(){
+			@Override
+			public void actionPerformed(ActionEvent e){
+				
+				List<Engineer> engs = mySqlConnector.getAllEngineers();
+				
+				String[] engineerNames = miscMethods.getListOfEngNames(engs);
+				
+				String engName = referTo(engineerNames);
+				
+				mySqlConnector.referTicket(t.getTicketID(),miscMethods.getEngIdFromNameString(engs, engName),(t.getNoOfReferrals()+1));
+			}
+
+
+		});
 
 
 
@@ -106,7 +146,7 @@ public class openTicketDetailsWindow extends JFrame{
 
 
 	}
-	public class ticketDetails extends JPanel{
+	private class ticketDetails extends JPanel{
 		public ticketDetails(){
 			setLayout(new MigLayout("wrap 2"));
 
@@ -161,7 +201,7 @@ public class openTicketDetailsWindow extends JFrame{
 
 		}
 	}
-	public class personDetails extends JPanel{
+	private class personDetails extends JPanel{
 		public personDetails(){
 			setLayout(new MigLayout("wrap 2"));
 
@@ -175,7 +215,9 @@ public class openTicketDetailsWindow extends JFrame{
 			emailt.setBackground(defaultGrey);
 			add(emailt);
 			email = new JTextArea(user.getEmail());
+			
 			add(email);
+		
 
 			phonenumbert = new JTextArea("Phone Number: ");
 			phonenumbert.setBackground(defaultGrey);
@@ -194,7 +236,7 @@ public class openTicketDetailsWindow extends JFrame{
 		}
 
 	}
-	public class buttons extends JPanel{
+	private class buttons extends JPanel{
 		public buttons(){
 			completeTicket = new JButton("Complete");
 			refer = new JButton("Refer Ticket");	
@@ -207,6 +249,39 @@ public class openTicketDetailsWindow extends JFrame{
 		}
 
 	}
+	
+	private boolean sendEmail(){
+	
+		 Desktop desktop = Desktop.getDesktop();  
+          String url = "";  
+          URI mailTo;  
+           try {  
+               url = "mailTo:"+user.getEmail()+"?subject="+"Ticket%20-%20"+ticket.getTicketID()+"%20Response";  
+                mailTo = new URI(url);  
+                desktop.mail(mailTo);  
+				return true;
+           } catch (URISyntaxException e) {  
+                e.printStackTrace();  
+				return false;
+           } catch (IOException e) {  
+                 e.printStackTrace(); 
+				 return false;
+            }  
+	
+	
+	}
+	
+		static String referTo(String[] choices) {
+        String s = (String) JOptionPane.showInputDialog(
+                null,
+                "Select an Engineer To Refer this ticket to",
+                "Refer Ticket",
+                JOptionPane.PLAIN_MESSAGE,
+                null,
+                choices,
+                choices[0]);
+        return s;
+    }
 
 
 

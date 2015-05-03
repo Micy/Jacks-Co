@@ -1,4 +1,5 @@
 //javac -classpath .;miglayout.jar QueuedTicketPopup.java
+//javac -classpath .;mysqlconnector.jar;sendgrid.jar;miglayout.jar QueuedTicketPopup.java
 
 import javax.swing.*;
 import java.util.*;
@@ -103,13 +104,20 @@ public class QueuedTicketPopup extends JFrame{
 							//int ticketID =(int) table1.getValueAt(row,0);
 							if(mySqlConnector.acceptTicket(ticketID)){
 								JOptionPane.showMessageDialog(null,"Ticket Successfully Accepted","Ticket Successfully Accepted",JOptionPane.PLAIN_MESSAGE);
-								
-								//email to do
+								Ticket acceptedTicket = miscMethods.findTicketByID(ticketID, tickets);
+								User user = mySqlConnector.getUserbyID(acceptedTicket.getUserID());
+								if(Emailer.ticketAccepted(acceptedTicket,user)){
+								}
+								else{
+									JOptionPane.showMessageDialog(null,"Error sending confirmation email","Confirmation e-mail not sent!, Please Contact user manually!",JOptionPane.ERROR_MESSAGE);	
+								}
+						
 								
 								setVisible(false);
 								dispose();
 								System.out.println("Queued Tickets ReLoaded");
 								QueuedTicketPopup frame = new QueuedTicketPopup(mySqlConnector.getQueuedTickets(EngineerApplication.getCurrentEngineerID()));
+								
 								miscMethods.setWindowPosition(frame, 0);
 								
 							}
@@ -142,12 +150,12 @@ public class QueuedTicketPopup extends JFrame{
 	
 		public menuBar(){
 			acceptTicket = new JButton("Accept Ticket");
-			additionalDetails = new JButton("View Details");	
+			//additionalDetails = new JButton("View Details");	
 			closeWindow = new JButton("Close");
 			
 		
 			add(acceptTicket);
-			add(additionalDetails);
+			//add(additionalDetails);
 			add(closeWindow);
 		}
 	}
