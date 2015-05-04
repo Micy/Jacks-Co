@@ -47,12 +47,8 @@ public class openTicketDetailsWindow extends JFrame{
 
 
 	public openTicketDetailsWindow(Ticket t){
+
 		super("Ticket Number: "+t.getTicketID()+" Details");
-		
-		if (t == null) {
-				System.out.println("null ticket passed to window");
-			}
-		
 		ticket = t;
 		user = mySqlConnector.getUserbyID(ticket.getUserID());
 
