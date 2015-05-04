@@ -17,6 +17,8 @@ public class Engineer extends Person
 		managerID = mid;
 		
 	}
+
+	
 	
 	/////Methods to get variables/////
 	public int getEngineerID()
