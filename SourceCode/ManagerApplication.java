@@ -22,7 +22,8 @@ import net.miginfocom.swing.MigLayout;
 
 public class ManagerApplication extends JFrame {
 
-	static session managerID;
+	session managerSession;
+	//static int managerID;
 
 	static int selectedTicketID = 0;
 
@@ -32,7 +33,7 @@ public class ManagerApplication extends JFrame {
 	public static void main(String[] args) {
 
 
-		session nsess = mySqlConnector.login(2, "1234");
+		session nsess = mySqlConnector.login(1, "1234");
 		ManagerApplication frame = new ManagerApplication(nsess);
 
 
@@ -47,6 +48,8 @@ public class ManagerApplication extends JFrame {
 	static private JButton viewSpecs;
 	String foreName;
 	String surName;
+	int managerID;
+
 
 
 
@@ -56,7 +59,10 @@ public class ManagerApplication extends JFrame {
 		super("Manager Application  -  " + miD.getForename() + " " + miD.getSurname()); //putting engineers name in the windows title
 		foreName = miD.getForename();
 		surName = miD.getSurname();
-		managerID = miD;
+		managerID = miD.getUserID();
+		managerSession = miD;
+
+
 
 		buildGUI();
 
@@ -79,40 +85,83 @@ public class ManagerApplication extends JFrame {
 
 
 	private void buildGUI() {
-		
+
 		JPanel pane = new JPanel(new MigLayout("wrap 1"));
+
+
+
 		viewUsers = new JButton("View & Edit Users");
+
+
+
 		viewEngs = new JButton("View & Edit Engineers");
+
+
+
 		viewTickets = new JButton("View All Tickets");
+		viewTickets.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				//System.out.println("Queued Tickets Loaded");
+				if(managerSession != null){
+					System.out.println("not null manapp");
+				}
+				ManagerViewTickets frame2 = new ManagerViewTickets(managerSession);
+				miscMethods.setWindowPosition(frame2, 0);
+				viewTickets.setEnabled(false);
+				//setVisible(false);
+				//dispose();
+			}
+
+		});
+
+
+
+
+
 		viewIssues = new JButton("View & Edit Issues");
+
+
+
 		viewSpecs = new JButton("View & Edit Specialisations");
+
+
+
 		JSeparator separator = new JSeparator();
-		
 
 
 
 
 
 
-		pane.add(new JLabel("Hello " + foreName + " " + surName));
+
+		pane.add(new JLabel("Hello " + foreName + " " + surName  + " " + managerID));
 		pane.add(separator, "growx, wrap");
 		pane.add(viewUsers, "growx");
 		pane.add(viewTickets, "growx");
 		pane.add(viewEngs, "growx");
 		pane.add(viewIssues, "growx");
 		pane.add(viewSpecs, "growx");
-		
-		
-		
-		
+
+
+
+
 		add(pane);
-		
+
 
 
 		pack();
-		
+
 	}
 
+
+	public static void queuedViewClosed() {
+
+		viewTickets.setEnabled(true);
+		//refreshTable();
+
+
+	}
 
 
 
