@@ -16,7 +16,7 @@ public class Emailer {
 		SendGrid sendgrid = new SendGrid("jacks-co", "michaelclayson1");
 		SendGrid.Email email = new SendGrid.Email();
 		
-		Engineer engineer = mySqlConnector.getEngineer(EngineerApplication.getCurrentEngineerID());
+		Engineer engineer = mySqlConnector.getEngineerbyID(EngineerApplication.getCurrentEngineerID());
 		
 		email.addTo(user.getEmail());
 		email.setFrom(FROMADDRESS);
@@ -45,7 +45,7 @@ public class Emailer {
 		SendGrid sendgrid = new SendGrid("jacks-co", "michaelclayson1");
 		SendGrid.Email email = new SendGrid.Email();
 		
-		Engineer engineer = mySqlConnector.getEngineer(EngineerApplication.getCurrentEngineerID());
+		Engineer engineer = mySqlConnector.getEngineerbyID(EngineerApplication.getCurrentEngineerID());
 		
 		email.addTo(user.getEmail());
 		email.setFrom(FROMADDRESS);
