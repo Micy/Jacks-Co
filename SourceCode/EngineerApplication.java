@@ -1,5 +1,7 @@
-//javac -classpath .;mysqlconnector.jar;sendgrid.jar;miglayout.jar EngineerApplication.java
-//java -classpath .;mysqlconnector.jar;sendgrid.jar;miglayout.jar EngineerApplication
+//javac -classpath .;mysqlconnector.jar;sendgrid.jar;miglayout.jar;guava-18.0.jar EngineerApplication.java
+//java -classpath .;mysqlconnector.jar;sendgrid.jar;miglayout.jar;guava-18.0.jar EngineerApplication
+
+//javac -classpath .;mysqlconnector.jar;sendgrid.jar;miglayout.jar;guava-18.0.jar *.java
 
 //SELECT Forename, Surname FROM Person;
 import java.util.*;

@@ -78,7 +78,7 @@ public class Ticket
 		return priority;
 	}
 	
-	public  String getScreenshot()
+	public String getScreenshot()
 	{
 		return screenshot;
 	}

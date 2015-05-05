@@ -4,6 +4,10 @@ import javax.swing.*;
 import java.util.*;
 import java.awt.Color;
 import java.awt.event.*;
+import java.awt.Image;
+import java.awt.Image;
+import java.awt.image.BufferedImage;
+import java.awt.FlowLayout;
 
 //MigLayout
 import net.miginfocom.layout.Grid;
@@ -18,6 +22,8 @@ public class openTicketDetailsWindow extends JFrame{
 	protected JButton completeTicket;
 	protected JButton refer;
 	protected JButton close;
+	protected JButton viewImages;
+
 
 
 	//Ticket Details Side
@@ -97,6 +103,69 @@ public class openTicketDetailsWindow extends JFrame{
 
 		});
 
+		refer.addActionListener(new ActionListener(){
+			@Override
+			public void actionPerformed(ActionEvent e){
+				
+
+				List<Engineer> engineers = mySqlConnector.getAllEngineers();
+
+				int[] ids = new int[engineers.size()];
+				String[] names = new String[engineers.size()];
+
+				for(int i =0; i< engineers.size() ; i++){
+					ids[i]=engineers.get(i).getEngineerID();
+					names[i]=engineers.get(i).getForename()+" "+engineers.get(i).getSurname();
+				}
+
+				String refereng = (String) JOptionPane.showInputDialog(null, 
+        "Who do you want to refer the ticket to?",
+        "Refer Ticket",
+        JOptionPane.QUESTION_MESSAGE, 
+        null, 
+        names, 
+        names[0]);
+				int i=0;
+				
+				while(!names[i].equals(refereng)){
+					i++;
+				}
+
+
+				int engineerID = ids[i];
+
+
+
+				if(mySqlConnector.referTicket(ticket.getTicketID(), engineerID, ticket.getNoOfReferrals()+1, ticket.getReferralHistory()+engineerID+",")){
+					JOptionPane.showMessageDialog(null,"Ticket Successfully Referred","Ticket Successfully Referred",JOptionPane.PLAIN_MESSAGE);
+					}
+					else{
+					JOptionPane.showMessageDialog(null,"Error Referring Ticket","Error Referring Ticket",JOptionPane.ERROR_MESSAGE);
+					}
+
+
+
+				setVisible(false);
+				dispose();
+				EngineerApplication.refreshTable();
+
+			}
+		});
+		
+		viewImages.addActionListener(new ActionListener(){
+			@Override
+			public void actionPerformed(ActionEvent e){
+
+				BufferedImage images[] = miscMethods.getTicketImages(t);
+				for(int i = 0 ; i<images.length; i++){
+					PhotoViewer p = new PhotoViewer(images[i]);
+				}
+				
+			}
+
+
+		});
+
 
 
 		setVisible(true);
@@ -140,6 +209,8 @@ public class openTicketDetailsWindow extends JFrame{
 			add(priority);
 
 			//PUT PHOTOS IN HERE!
+			
+			
 
 			noOfReferalst = new JTextArea("Number of Referals: ");
 			noOfReferalst.setBackground(defaultGrey);
@@ -197,11 +268,13 @@ public class openTicketDetailsWindow extends JFrame{
 	public class buttons extends JPanel{
 		public buttons(){
 			completeTicket = new JButton("Complete");
+			viewImages = new JButton("View Images");
 			refer = new JButton("Refer Ticket");	
 			close = new JButton("Close");
 
 
 			add(completeTicket);
+			add(viewImages);
 			add(refer);
 			add(close);
 		}

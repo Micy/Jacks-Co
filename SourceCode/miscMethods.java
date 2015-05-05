@@ -15,6 +15,15 @@ import java.awt.Color;
 import java.awt.event.*;
 import java.text.Format;
 import java.text.SimpleDateFormat;
+import java.util.Collections;
+import com.google.common.base.Splitter;
+import com.google.common.collect.*;
+import java.awt.Image;
+import java.awt.image.BufferedImage;
+import javax.imageio.ImageIO;
+import java.net.URL;
+import java.io.IOException;
+import java.net.MalformedURLException;
 
 public class miscMethods{
 
@@ -122,6 +131,28 @@ public class miscMethods{
 		}
 		return null;
 	}
-
+	
+	public static BufferedImage[] getTicketImages(Ticket ticket){// change back to bufferedImage
+		String url = "http://jacks-co.me/images/uploads/1/"+ticket.getTicketID()+"/";
+		List<String> list = Lists.newArrayList(Splitter.on(",").split(ticket.getScreenshot()));
+		
+		BufferedImage[] images = new BufferedImage[list.size()];
+		try{
+			for(int i =0 ; i<list.size(); i++){
+				System.out.println(url+list.get(i));
+				images[i] = ImageIO.read(new URL(url+list.get(i)));
+			}
+			return images;
+		}
+		catch(MalformedURLException e){
+			e.printStackTrace();
+			return null;
+		}
+		catch(IOException exception){
+			exception.printStackTrace();
+			return null;
+		}
+	
+	}	
 }
 

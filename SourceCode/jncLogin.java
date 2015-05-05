@@ -1,5 +1,5 @@
-//javac -classpath .;mysqlconnector.jar;sendgrid.jar;miglayout.jar jncLogin.java
-//java -classpath .;mysqlconnector.jar;sendgrid.jar;miglayout.jar jncLogin
+//javac -classpath .;mysqlconnector.jar;sendgrid.jar;miglayout.jar;guava-18.0.jar jncLogin.java
+//java -classpath .;mysqlconnector.jar;sendgrid.jar;miglayout.jar;guava-18.0.jar jncLogin
 
 import java.util.*;
 import java.util.concurrent.TimeUnit;

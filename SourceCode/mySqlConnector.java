@@ -215,6 +215,50 @@ public class mySqlConnector {
       return null;
    }
 
+     public static List<Engineer> getAllEngineers(){
+      Connection conn = null;
+      Statement stmt = null;
+      List<Engineer> list = new Vector<Engineer>();
+      try{
+         Class.forName("com.mysql.jdbc.Driver");
+         conn = DriverManager.getConnection(DB_URL,USER,PASS);
+         stmt = conn.createStatement();
+         String sql;
+         sql = "SELECT * FROM Person, Engineer WHERE Engineer.PersonID = Person.PersonID";
+         ResultSet rs = stmt.executeQuery(sql);
+         while(rs.next()){
+         list.add(new Engineer(rs.getInt("EngineerID"),rs.getInt("ExpertiseID"),rs.getInt("Availability"),rs.getInt("ManagerID"),rs.getInt("PersonID"),rs.getString("Title"),rs.getString("Forename"),rs.getString("Surname"),rs.getString("Email"),rs.getString("PhoneNumber"),rs.getString("Password"),rs.getString("Salt")));
+         }
+
+
+         rs.close();
+         stmt.close();
+         conn.close(); 
+         return list;
+      }//try
+      catch(SQLException se){
+      //Handle errors for JDBC
+      se.printStackTrace();
+   }catch(Exception e){
+      //Handle errors for Class.forName
+      e.printStackTrace();
+   }finally{
+      //finally block used to close resources
+      try{
+         if(stmt!=null)
+            stmt.close();
+      }catch(SQLException se2){
+      }// nothing we can do
+      try{
+         if(conn!=null)
+            conn.close();
+      }catch(SQLException se){
+         se.printStackTrace();
+      }//end finally try
+   }//end try
+      return null;
+   }
+
 
 
 
@@ -334,6 +378,48 @@ public class mySqlConnector {
         stmt.close();
         conn.close(); 
          return list;	
+		}//try
+		catch(SQLException se){
+		  //Handle errors for JDBC
+		  se.printStackTrace();
+	   }catch(Exception e){
+		  //Handle errors for Class.forName
+		  e.printStackTrace();
+	   }finally{
+		  //finally block used to close resources
+		  try{
+			 if(stmt!=null)
+				stmt.close();
+		  }catch(SQLException se2){
+		  }// nothing we can do
+		  try{
+			 if(conn!=null)
+				conn.close();
+		  }catch(SQLException se){
+			 se.printStackTrace();
+		  }//end finally try
+	   }//end try
+		  return null;
+   }
+   
+      	public static Ticket getTicketByID(int tID){
+		Connection conn = null;
+		Statement stmt = null;
+		Ticket ticket;
+		try{
+			Class.forName("com.mysql.jdbc.Driver");
+			conn = DriverManager.getConnection(DB_URL,USER,PASS);
+			stmt = conn.createStatement();
+			String sql; 
+			sql = "SELECT * FROM Ticket WHERE TicketID = "+tID;
+			ResultSet rs = stmt.executeQuery(sql);
+			rs.first();
+			ticket = new Ticket(rs.getInt("TicketID"),rs.getInt("UserID"),rs.getInt("EngineerID"),rs.getInt("IssueID"),(rs.getTimestamp("TimeEntered").getTime()),rs.getInt("StateFlag"),rs.getString("ProblemDescription"),rs.getString("Screenshot"),(rs.getTimestamp("TimeEntered").getTime()),rs.getInt("NoOfReferrals"),rs.getString("RefferalHistory"),rs.getInt("Priority"));
+			
+		rs.close();
+        stmt.close();
+        conn.close(); 
+         return ticket;	
 		}//try
 		catch(SQLException se){
 		  //Handle errors for JDBC
@@ -629,7 +715,7 @@ public class mySqlConnector {
 			conn = DriverManager.getConnection(DB_URL,USER,PASS);
 			stmt = conn.createStatement();
 			String sql; 
-			sql="UPDATE Ticket SET StateFlag = 3 Where TicketID = "+ticketID;
+			sql="UPDATE Ticket SET StateFlag = 3, CompletedTime=CURRENT_TIMESTAMP Where TicketID = "+ticketID;
 			stmt.executeUpdate(sql);
 			stmt.close();
 			conn.close(); 
@@ -658,6 +744,47 @@ public class mySqlConnector {
 	   return false;
 		
 	}
+
+
+
+	public static boolean referTicket(int ticketID, int engID, int refNo, String refHist){
+		Connection conn = null;
+		Statement stmt = null;
+		try{
+			Class.forName("com.mysql.jdbc.Driver");
+			conn = DriverManager.getConnection(DB_URL,USER,PASS);
+			stmt = conn.createStatement();
+			String sql; 
+			sql="UPDATE Ticket SET StateFlag = 1, EngineerID ="+engID+", NoOfReferrals="+refNo+", RefferalHistory="+refHist+" Where TicketID = "+ticketID;
+			stmt.executeUpdate(sql);
+			stmt.close();
+			conn.close(); 
+			return true;
+		}//try
+		catch(SQLException se){
+		  //Handle errors for JDBC
+		  se.printStackTrace();
+	   }catch(Exception e){
+		  //Handle errors for Class.forName
+		  e.printStackTrace();
+	   }finally{
+		  //finally block used to close resources
+		  try{
+			 if(stmt!=null)
+				stmt.close();
+		  }catch(SQLException se2){
+		  }// nothing we can do
+		  try{
+			 if(conn!=null)
+				conn.close();
+		  }catch(SQLException se){
+			 se.printStackTrace();
+		  }//end finally try
+	   }//end try
+	   return false;
+		
+	}
+
 
 		public static Engineer getEngineerbyID(int eID) {
 		Connection conn = null;

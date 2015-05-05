@@ -147,7 +147,7 @@ public class QueuedTicketPopup extends JFrame{
 			
 		
 			add(acceptTicket);
-			add(additionalDetails);
+			//add(additionalDetails);
 			add(closeWindow);
 		}
 	}
